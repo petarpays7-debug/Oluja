@@ -58,14 +58,15 @@ function initStageParallax() {
   const tick = () => {
     cxr = lerp(cxr, tx, 0.08);
     cyr = lerp(cyr, ty, 0.08);
-    scene.style.transform = `rotateY(${cxr * 10}deg) rotateX(${-cyr * 8}deg)`;
+    // Blaži zamah — kompozicija ostaje unutar kadra i ne ispada iz scene.
+    scene.style.transform = `rotateY(${cxr * 7}deg) rotateX(${-cyr * 5.5}deg)`;
     depthEls.forEach((el) => {
       const d = parseFloat(el.dataset.depth) || 1;
       // `translate` je nezavisno od `transform` u CSS-u i ne gazi rotacije iz klase.
-      el.style.translate = `${cxr * d * 16}px ${cyr * d * 16}px`;
+      el.style.translate = `${cxr * d * 11}px ${cyr * d * 11}px`;
     });
     if (glow) {
-      glow.style.transform = `translate(${cxr * 40}px, ${cyr * 40}px)`;
+      glow.style.transform = `translate(${cxr * 32}px, ${cyr * 32}px)`;
     }
     raf = requestAnimationFrame(tick);
   };

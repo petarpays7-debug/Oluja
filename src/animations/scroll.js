@@ -32,25 +32,23 @@ export function initScroll() {
     });
   });
   gsap.from(stmLines, {
-    yPercent: 110,
+    yPercent: 60,
+    opacity: 0,
     duration: 0.9,
     stagger: 0.1,
     ease: 'power4.out',
-    scrollTrigger: { trigger: '.statement', start: 'top 65%' }
+    scrollTrigger: { trigger: '.statement', start: 'top 70%' }
   });
 
-  // statement rail line draw (tanka plava linija putuje uz rub teksta)
-  const rail = document.querySelector('.statement__rail');
-  if (rail) {
-    gsap.fromTo(
-      rail,
-      { '--p': '0%' },
-      {
-        '--p': '100%',
-        ease: 'none',
-        scrollTrigger: { trigger: '.statement', start: 'top 75%', end: 'bottom 55%', scrub: true }
-      }
-    );
+  // centrirani vertikalni akcent „izraste” na ulazu u sekciju
+  const accent = document.querySelector('.statement__accent');
+  if (accent) {
+    ScrollTrigger.create({
+      trigger: '.statement',
+      start: 'top 75%',
+      once: true,
+      onEnter: () => accent.classList.add('is-grown')
+    });
   }
 
   // --- generic reveal za capabilities, values, steps, trust ---

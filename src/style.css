@@ -505,16 +505,19 @@ section {
 
 /* ---------- HERO ---------- */
 .hero {
+  --hero-maxw: var(--maxw);
   position: relative;
+  width: 100%;
   min-height: 100svh;
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
   align-items: center;
-  padding: calc(var(--nav-h) + 2rem) var(--gutter) 4rem;
-  max-width: var(--maxw);
-  margin: 0 auto;
+  /* Sadržaj ostaje centriran unutar --hero-maxw, dok pozadina ide full-bleed. */
+  padding: calc(var(--nav-h) + 2rem)
+    max(var(--gutter), calc((100% - var(--hero-maxw)) / 2)) 4rem;
   overflow: hidden;
 }
+/* Pozadina (čestice, mreža, glow) puni cijelu širinu ekrana — bez okvira i šava. */
 .hero__bg {
   position: absolute;
   inset: 0;
@@ -526,11 +529,22 @@ section {
   position: absolute;
   inset: 0;
   pointer-events: none;
+  z-index: 1;
   background: radial-gradient(
-    ellipse 70% 70% at 68% 45%,
-    transparent 45%,
-    rgba(0, 0, 0, 0.28) 100%
+    ellipse 78% 72% at 66% 42%,
+    transparent 52%,
+    rgba(0, 0, 0, 0.22) 100%
   );
+}
+/* Meko stapanje heroa u sljedeću sekciju — uklanja vidljivi donji šav. */
+.hero__bg::before {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 28%;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(to bottom, transparent, var(--bg));
 }
 .hero__canvas {
   position: absolute;
@@ -680,16 +694,16 @@ section {
   will-change: transform;
 }
 .browser--doors {
-  width: 64%;
-  top: 8%;
-  left: 0;
-  transform: translateZ(40px) rotateY(16deg) rotateX(4deg);
+  width: 59%;
+  top: 6%;
+  left: 3%;
+  transform: translateZ(34px) rotateY(15deg) rotateX(4deg);
 }
 .browser--bimmer {
-  width: 60%;
-  bottom: 6%;
-  right: 0;
-  transform: translateZ(90px) rotateY(-14deg) rotateX(-3deg);
+  width: 57%;
+  bottom: 9%;
+  right: 3%;
+  transform: translateZ(74px) rotateY(-13deg) rotateX(-3deg);
 }
 .browser__bar {
   display: flex;
@@ -729,15 +743,15 @@ section {
 }
 .phone {
   position: absolute;
-  width: 17%;
-  bottom: 2%;
-  left: 42%;
+  width: 15%;
+  bottom: 11%;
+  left: 47%;
   border-radius: 18px;
   overflow: hidden;
   background: var(--graphite);
   border: 1px solid var(--line-strong);
   box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.85);
-  transform: translateZ(160px) rotateY(-8deg);
+  transform: translateZ(124px) rotateY(-8deg);
   will-change: transform;
 }
 .phone__screen {
@@ -804,45 +818,85 @@ section {
   100% { transform: translateY(100%); }
 }
 
-/* ---------- STATEMENT ---------- */
+/* ---------- STATEMENT (uvodna izjava) ---------- */
 .statement {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: clamp(7rem, 18vh, 14rem) var(--gutter);
-}
-.statement__inner {
-  max-width: 24ch;
-  margin: 0 auto;
   position: relative;
-}
-.statement__rail {
-  position: absolute;
-  left: calc(var(--gutter) * 0.5);
-  top: 0;
-  bottom: 30%;
-  width: 1px;
-  background: var(--line);
+  padding: clamp(8rem, 22vh, 17rem) var(--gutter);
+  display: grid;
+  place-items: center;
   overflow: hidden;
 }
-.statement__rail::before {
-  content: '';
+/* Signature canvas (leptiri / svjetlosne forme) — iza teksta. */
+.statement__fx {
   position: absolute;
-  inset: 0 0 auto 0;
-  height: var(--p, 0%);
-  background: linear-gradient(180deg, var(--blue), var(--blue-light));
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+/* Mekani centrirani sjaj koji daje fokus i dubinu izjavi. */
+.statement__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(78vw, 920px);
+  height: min(60vh, 560px);
+  transform: translate(-50%, -52%);
+  background: radial-gradient(
+    ellipse at center,
+    rgba(52, 120, 255, 0.12),
+    transparent 68%
+  );
+  filter: blur(36px);
+  pointer-events: none;
+  z-index: 0;
+}
+.statement__inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1180px;
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.statement__eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.74rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--blue-light);
+  margin-bottom: 1.5rem;
+}
+/* Tanki centrirani vertikalni akcent koji „izraste” na ulazu u kadar. */
+.statement__accent {
+  width: 1px;
+  height: clamp(2.5rem, 6vh, 4.5rem);
+  margin-bottom: clamp(2rem, 5vh, 3.5rem);
+  background: linear-gradient(180deg, var(--blue-light), transparent);
+  transform-origin: top;
+  transform: scaleY(0);
+}
+.has-js .statement__accent {
+  transition: transform 1s var(--ease);
+}
+.statement__accent.is-grown {
+  transform: scaleY(1);
 }
 .statement__big {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.8rem, 5vw, 4rem);
-  line-height: 1.08;
+  font-size: clamp(1.9rem, 4.4vw, 3.7rem);
+  line-height: 1.16;
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 .stm-line {
   display: block;
-  overflow: hidden;
   color: var(--text-dim);
-  transition: color 0.5s var(--ease);
+  transition: color 0.6s var(--ease);
 }
 .stm-line.is-lit {
   color: var(--text);
@@ -851,10 +905,11 @@ section {
   color: var(--blue-light);
 }
 .statement__sub {
-  margin-top: 2.5rem;
-  max-width: 52ch;
+  margin-top: clamp(2.25rem, 4.5vw, 3.25rem);
+  max-width: 56ch;
   color: var(--text-dim);
   font-size: clamp(1rem, 1.5vw, 1.25rem);
+  text-wrap: balance;
 }
 
 /* ---------- PORTFOLIO ---------- */
@@ -2022,14 +2077,12 @@ section {
 /* ---------- LARGE / CINEMATIC SCREENS (>1600px) ---------- */
 @media (min-width: 1600px) {
   .hero {
-    max-width: 92vw;
+    /* Sadržaj diše šire, ali pozadina ostaje full-bleed i bez šava. */
+    --hero-maxw: 1680px;
     grid-template-columns: 1.05fr 1fr;
     gap: clamp(3rem, 4vw, 5.5rem);
     padding-top: calc(var(--nav-h) + 3rem);
-    padding-left: clamp(1.75rem, 2.4vw, 3.25rem);
-    padding-right: clamp(1.75rem, 2.4vw, 3.25rem);
   }
-  /* Tekst malo dalje lijevo, ali nikad ne dodiruje rub. */
   .hero__content {
     padding-right: clamp(1rem, 2vw, 2.5rem);
   }
@@ -2041,7 +2094,7 @@ section {
     font-size: 1.12rem;
   }
 
-  /* 3D kompozicija dobiva više prisutnosti. */
+  /* 3D kompozicija dobiva više prisutnosti, ali ostaje unutar kadra. */
   .hero__stage {
     min-height: 560px;
   }
@@ -2050,41 +2103,38 @@ section {
   }
   /* Jači, ali kontrolirani plavi sjaj iza grupe prozora. */
   .hero__glow {
-    top: 24%;
-    right: 12%;
-    max-width: 860px;
-    max-height: 860px;
-    background: radial-gradient(circle, rgba(52, 120, 255, 0.3), transparent 62%);
+    top: 26%;
+    right: 14%;
+    max-width: 820px;
+    max-height: 820px;
+    background: radial-gradient(circle, rgba(52, 120, 255, 0.28), transparent 64%);
     filter: blur(44px);
   }
-  /* Doors: ~20-25% veći, malo više. */
   .browser--doors {
-    width: 65%;
-    top: 3%;
-    left: -2%;
+    width: 60%;
+    top: 4%;
+    left: 2%;
   }
-  /* Bimmer: ~25-30% veći, dalje desno, malo niže, jača prisutnost. */
   .browser--bimmer {
-    width: 63%;
-    right: -6%;
-    bottom: 0;
-    transform: translateZ(130px) rotateY(-14deg) rotateX(-3deg);
+    width: 58%;
+    right: 2%;
+    bottom: 7%;
+    transform: translateZ(108px) rotateY(-13deg) rotateX(-3deg);
     box-shadow: 0 60px 110px -40px rgba(0, 0, 0, 0.9),
       0 0 90px -30px rgba(52, 120, 255, 0.22);
   }
-  /* Mobitel: ~10-15% veći, bliže korisniku, jača dubina. */
   .phone {
-    width: 15.5%;
-    bottom: 0;
-    left: 44%;
-    transform: translateZ(230px) rotateY(-8deg);
+    width: 14.5%;
+    bottom: 9%;
+    left: 49%;
+    transform: translateZ(176px) rotateY(-8deg);
   }
 }
 
 /* Ultrawide / 2560px+ — koristi širinu bez praznih površina. */
 @media (min-width: 2200px) {
   .hero {
-    max-width: 90vw;
+    --hero-maxw: 2040px;
     gap: clamp(4rem, 4vw, 7rem);
   }
   .hero__title {
@@ -2093,15 +2143,12 @@ section {
   .hero__desc {
     font-size: 1.2rem;
   }
-  .hero__stage {
-    justify-items: end;
-  }
   .stage__scene {
-    max-width: 880px;
+    max-width: 860px;
   }
   .hero__glow {
-    max-width: 1000px;
-    max-height: 1000px;
+    max-width: 960px;
+    max-height: 960px;
   }
 }
 
@@ -2134,12 +2181,14 @@ section {
     display: none !important;
   }
   .hero__canvas,
-  .hero__scrollhint span::after {
+  .hero__scrollhint span::after,
+  .statement__fx {
     display: none;
   }
   .hero__title .line > span,
   .reveal-line,
   .stm-line,
+  .statement__accent,
   .pf-panel,
   .trust-card,
   .step,
@@ -2147,6 +2196,9 @@ section {
     opacity: 1 !important;
     transform: none !important;
     visibility: visible !important;
+  }
+  .statement__accent {
+    transform: scaleY(1) !important;
   }
   .stm-line {
     color: var(--text);

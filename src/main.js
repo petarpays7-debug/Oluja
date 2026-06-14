@@ -15,6 +15,7 @@ import { initHero } from './animations/hero.js';
 import { initScroll } from './animations/scroll.js';
 import { initPortfolioScroll } from './animations/portfolio.js';
 import { initLaboratory } from './animations/laboratory.js';
+import { initSignature } from './animations/signature.js';
 
 import { prefersReducedMotion, canRunHeavyMotion } from './utils/performance.js';
 
@@ -115,6 +116,7 @@ function boot() {
   initScroll();
   initPortfolioScroll();
   initLaboratory();
+  initSignature();
 
   // Three.js tek kad je sve ostalo spremno (idle ako moguće)
   const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 200));
