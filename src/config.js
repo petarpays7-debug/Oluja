@@ -1,7 +1,7 @@
 export const SITE_CONFIG = {
   company: {
     brand: 'OLUJA',
-    subtitle: 'DIGITALNI STUDIO',
+    subtitle: 'STUDIO',
     legalName: 'OLUJA, obrt za trgovinu na malo i usluge, vl. Petar Husar',
     email: 'oluja.store@gmail.com',
     phone: '',

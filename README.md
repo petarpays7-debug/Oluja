@@ -1,6 +1,6 @@
-# OLUJA — Digitalni studio
+# OLUJA STUDIO
 
-Premium prezentacijska web stranica za digitalni studio **OLUJA**.
+Premium prezentacijska web stranica za **OLUJA STUDIO**.
 Vanilla JS + Vite, GSAP / ScrollTrigger, Lenis smooth scroll, opcionalni Three.js
 particle field, custom cursor i CSS 3D portfolio kompozicija.
 

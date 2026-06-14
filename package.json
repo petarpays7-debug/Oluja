@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "OLUJA — Digitalni studio. Premium prezentacijska web stranica.",
+  "description": "OLUJA STUDIO. Premium prezentacijska web stranica.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

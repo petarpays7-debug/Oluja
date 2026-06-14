@@ -520,6 +520,18 @@ section {
   inset: 0;
   z-index: 0;
 }
+/* Elegantan light falloff prema rubovima ekrana — daje dubinu kompoziciji. */
+.hero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 70% at 68% 45%,
+    transparent 45%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+}
 .hero__canvas {
   position: absolute;
   inset: 0;
@@ -2004,6 +2016,92 @@ section {
   }
   .hero__stage .phone {
     display: none;
+  }
+}
+
+/* ---------- LARGE / CINEMATIC SCREENS (>1600px) ---------- */
+@media (min-width: 1600px) {
+  .hero {
+    max-width: 92vw;
+    grid-template-columns: 1.05fr 1fr;
+    gap: clamp(3rem, 4vw, 5.5rem);
+    padding-top: calc(var(--nav-h) + 3rem);
+    padding-left: clamp(1.75rem, 2.4vw, 3.25rem);
+    padding-right: clamp(1.75rem, 2.4vw, 3.25rem);
+  }
+  /* Tekst malo dalje lijevo, ali nikad ne dodiruje rub. */
+  .hero__content {
+    padding-right: clamp(1rem, 2vw, 2.5rem);
+  }
+  .hero__title {
+    font-size: clamp(5.6rem, 4.6vw, 6.4rem);
+  }
+  .hero__desc {
+    max-width: 48ch;
+    font-size: 1.12rem;
+  }
+
+  /* 3D kompozicija dobiva više prisutnosti. */
+  .hero__stage {
+    min-height: 560px;
+  }
+  .stage__scene {
+    max-width: 760px;
+  }
+  /* Jači, ali kontrolirani plavi sjaj iza grupe prozora. */
+  .hero__glow {
+    top: 24%;
+    right: 12%;
+    max-width: 860px;
+    max-height: 860px;
+    background: radial-gradient(circle, rgba(52, 120, 255, 0.3), transparent 62%);
+    filter: blur(44px);
+  }
+  /* Doors: ~20-25% veći, malo više. */
+  .browser--doors {
+    width: 65%;
+    top: 3%;
+    left: -2%;
+  }
+  /* Bimmer: ~25-30% veći, dalje desno, malo niže, jača prisutnost. */
+  .browser--bimmer {
+    width: 63%;
+    right: -6%;
+    bottom: 0;
+    transform: translateZ(130px) rotateY(-14deg) rotateX(-3deg);
+    box-shadow: 0 60px 110px -40px rgba(0, 0, 0, 0.9),
+      0 0 90px -30px rgba(52, 120, 255, 0.22);
+  }
+  /* Mobitel: ~10-15% veći, bliže korisniku, jača dubina. */
+  .phone {
+    width: 15.5%;
+    bottom: 0;
+    left: 44%;
+    transform: translateZ(230px) rotateY(-8deg);
+  }
+}
+
+/* Ultrawide / 2560px+ — koristi širinu bez praznih površina. */
+@media (min-width: 2200px) {
+  .hero {
+    max-width: 90vw;
+    gap: clamp(4rem, 4vw, 7rem);
+  }
+  .hero__title {
+    font-size: clamp(6.2rem, 4.4vw, 7.4rem);
+  }
+  .hero__desc {
+    font-size: 1.2rem;
+  }
+  .hero__stage {
+    justify-items: end;
+  }
+  .stage__scene {
+    max-width: 880px;
+  }
+  .hero__glow {
+    max-width: 1000px;
+    max-height: 1000px;
   }
 }
 
