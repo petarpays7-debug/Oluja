@@ -20,6 +20,10 @@ import { prefersReducedMotion, canRunHeavyMotion } from './utils/performance.js'
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Označi da JS radi — neke progresivne nadogradnje (npr. fokus na koraku procesa)
+// primjenjuju se samo tada; bez JS-a sadržaj ostaje potpuno vidljiv.
+document.documentElement.classList.add('has-js');
+
 function initSmoothScroll() {
   if (prefersReducedMotion()) {
     // Sidrene poveznice rade preko native scrolla.

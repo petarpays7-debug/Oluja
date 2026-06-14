@@ -22,6 +22,16 @@ export function buildPortfolio() {
         <ul class="pf-panel__caps">
           ${p.capabilities.map((c) => `<li>${c}</li>`).join('')}
         </ul>
+        ${
+          (p.solved && p.solved.length)
+            ? `<div class="pf-panel__solved">
+          <span class="pf-panel__solved-label">ŠTO JE OVAJ PROJEKT RIJEŠIO</span>
+          <ul>
+            ${p.solved.map((s) => `<li>${s}</li>`).join('')}
+          </ul>
+        </div>`
+            : ''
+        }
         <a class="btn btn--primary pf-panel__cta" href="${p.url}"
            target="_blank" rel="noopener noreferrer"
            data-project-link data-project-title="${p.title}" data-magnetic>
@@ -57,17 +67,24 @@ export function buildPortfolio() {
   initProjectLinks();
 }
 
-// Page transition prije otvaranja projekta u novoj kartici.
+// Cinematic page transition prije otvaranja projekta u novoj kartici:
+// zoom browsera -> tamni overlay -> naziv u sredini -> otvaranje (~400ms).
 function initProjectLinks() {
   const wipe = document.getElementById('page-wipe');
   const wipeLabel = document.getElementById('page-wipe-label');
+  let busy = false;
 
   document.querySelectorAll('[data-project-link]').forEach((link) => {
     link.addEventListener('click', (e) => {
       if (prefersReducedMotion() || !wipe) return; // pusti default ponašanje
       e.preventDefault();
+      if (busy) return;
+      busy = true;
+
       const url = link.getAttribute('href');
       const title = link.dataset.projectTitle || '';
+      const browser = link.closest('.pf-panel')?.querySelector('.pf-browser');
+
       wipeLabel.textContent = title;
       wipe.classList.add('is-active');
 
@@ -75,23 +92,29 @@ function initProjectLinks() {
         onComplete: () => {
           window.open(url, '_blank', 'noopener,noreferrer');
           gsap.to(wipe, {
-            scaleY: 0,
-            transformOrigin: 'top',
-            duration: 0.4,
-            delay: 0.1,
-            ease: 'power3.inOut',
+            autoAlpha: 0,
+            duration: 0.45,
+            delay: 0.15,
+            ease: 'power2.out',
             onComplete: () => {
               wipe.classList.remove('is-active');
-              gsap.set(wipe, { scaleY: 0, transformOrigin: 'bottom' });
-              gsap.set(wipeLabel, { opacity: 0 });
+              gsap.set(wipe, { autoAlpha: 1, scaleY: 0, transformOrigin: 'bottom' });
+              gsap.set(wipeLabel, { opacity: 0, y: 14 });
+              if (browser) gsap.set(browser, { clearProps: 'scale' });
+              busy = false;
             }
           });
         }
       });
-      tl.to(wipe, { scaleY: 1, duration: 0.4, ease: 'power3.inOut' }).to(
+
+      if (browser) {
+        tl.to(browser, { scale: 1.06, duration: 0.4, ease: 'power2.out' }, 0);
+      }
+      tl.to(wipe, { scaleY: 1, duration: 0.4, ease: 'power3.inOut' }, 0).fromTo(
         wipeLabel,
-        { opacity: 1, duration: 0.2 },
-        '-=0.2'
+        { opacity: 0, y: 14 },
+        { opacity: 1, y: 0, duration: 0.24, ease: 'power2.out' },
+        0.12
       );
     });
   });

@@ -40,6 +40,7 @@ export const PROJECTS = [
       'Projekt je usmjeren na kvalitetan prikaz proizvoda, povjerenje kupaca i jednostavan kontakt s tvrtkom.',
     url: SITE_CONFIG.projects.doors.url,
     capabilities: ['Web dizajn', 'Razvoj', 'Prikaz proizvoda', 'Responzivnost'],
+    solved: ['Prikaz proizvoda', 'Izgradnja povjerenja', 'Jednostavan kontakt'],
     cursor: 'doors',
     assets: {
       desktop: 'doors-desktop',
@@ -60,6 +61,7 @@ export const PROJECTS = [
       'Vizualni identitet kombinira tamnu premium estetiku, velike fotografije vozila i kontroliran osjećaj brzine.',
     url: SITE_CONFIG.projects.bimmer.url,
     capabilities: ['Web dizajn', 'Razvoj', 'Animacije', 'Galerija vozila'],
+    solved: ['Premium percepcija', 'Prikaz vozila', 'Performanse i brzina'],
     cursor: 'bimmer',
     assets: {
       desktop: 'bimmer-desktop',

@@ -30,7 +30,10 @@ export function initNavigation() {
     nav.classList.toggle('is-scrolled', window.scrollY > 40);
     // u vrhu (hero) nijedna stavka nije aktivna
     if (window.scrollY < window.innerHeight * 0.4) {
-      navList.querySelectorAll('a.is-active').forEach((a) => a.classList.remove('is-active'));
+      navList.querySelectorAll('a.is-active').forEach((a) => {
+        a.classList.remove('is-active');
+        a.removeAttribute('aria-current');
+      });
     }
   };
   onScroll();
@@ -67,9 +70,12 @@ export function initNavigation() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const id = '#' + entry.target.id;
-            navAnchors.forEach((a) =>
-              a.classList.toggle('is-active', a.getAttribute('href') === id)
-            );
+            navAnchors.forEach((a) => {
+              const on = a.getAttribute('href') === id;
+              a.classList.toggle('is-active', on);
+              if (on) a.setAttribute('aria-current', 'true');
+              else a.removeAttribute('aria-current');
+            });
           }
         });
       },

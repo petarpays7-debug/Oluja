@@ -16,13 +16,47 @@ export function initContact() {
   const note = document.getElementById('contact-note');
 
   const setError = (name, msg) => {
-    const field = form.querySelector(`[name="${name}"]`)?.closest('.field');
-    const errEl = form.querySelector(`[data-error-for="${name}"]`);
-    if (field) field.classList.toggle('is-invalid', !!msg);
-    if (errEl) errEl.textContent = msg || '';
     const input = form.querySelector(`[name="${name}"]`);
+    const field = input?.closest('.field');
+    const errEl = form.querySelector(`[data-error-for="${name}"]`);
+    if (field) {
+      field.classList.toggle('is-invalid', !!msg);
+      field.classList.toggle('is-valid', !msg && !!input?.value.trim());
+    }
+    if (errEl) errEl.textContent = msg || '';
     if (input) input.setAttribute('aria-invalid', msg ? 'true' : 'false');
   };
+
+  const setNote = (msg, state) => {
+    note.textContent = msg;
+    note.classList.remove('is-success', 'is-error');
+    if (state) note.classList.add(state);
+  };
+
+  // Živo brisanje greške čim korisnik ispravi polje.
+  ['name', 'email', 'message'].forEach((n) => {
+    const input = form.querySelector(`[name="${n}"]`);
+    input?.addEventListener('blur', () => {
+      if (input.closest('.field').classList.contains('is-invalid')) {
+        validateField(n, Object.fromEntries(new FormData(form).entries()));
+      }
+    });
+    input?.addEventListener('input', () => {
+      if (input.closest('.field').classList.contains('is-invalid')) {
+        validateField(n, Object.fromEntries(new FormData(form).entries()));
+      }
+    });
+  });
+
+  function validateField(name, data) {
+    if (name === 'name') {
+      setError('name', data.name.trim() ? '' : 'Unesite ime i prezime.');
+    } else if (name === 'email') {
+      setError('email', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email) ? '' : 'Unesite ispravan e-mail.');
+    } else if (name === 'message') {
+      setError('message', data.message.trim().length >= 10 ? '' : 'Poruka je prekratka (min. 10 znakova).');
+    }
+  }
 
   const validate = (data) => {
     let ok = true;
@@ -50,7 +84,7 @@ export function initContact() {
     const data = Object.fromEntries(fd.entries());
 
     if (!validate(data)) {
-      note.textContent = 'Provjerite označena polja.';
+      setNote('Provjerite označena polja prije slanja.', 'is-error');
       const firstInvalid = form.querySelector('.is-invalid input, .is-invalid textarea');
       firstInvalid?.focus();
       return;
@@ -73,8 +107,10 @@ export function initContact() {
     )}&body=${encodeURIComponent(body)}`;
 
     window.location.href = mailto;
-    note.textContent =
-      'Otvara se vaša e-mail aplikacija s pripremljenim upitom. Ako se ne otvori, pišite nam na ' +
-      SITE_CONFIG.company.email + '.';
+    setNote(
+      'Otvorili smo vašu e-mail aplikaciju s pripremljenim upitom — preostaje samo kliknuti „Pošalji”. Ako se ne otvori, pišite izravno na ' +
+        SITE_CONFIG.company.email + '.',
+      'is-success'
+    );
   });
 }

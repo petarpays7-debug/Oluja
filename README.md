@@ -127,7 +127,9 @@ Three.js scene ni scroll-scrub rotacija — sav sadržaj je odmah vidljiv.
    `nemo-desktop.webp`, `nemo-mobile.webp`, `nemo-detail.webp` (+ ostalo).
 2. U `src/config.js`:
    - Dodaj u `SITE_CONFIG.projects.nemo = { title, url }`.
-   - Dodaj novi objekt u polje `PROJECTS` (s `index: '03'`, `assets`, `cursor` …).
+   - Dodaj novi objekt u polje `PROJECTS` (s `index: '03'`, `assets`, `cursor`,
+     `capabilities` i `solved` — lista „što je projekt riješio”). Polje `solved`
+     je opcionalno; ako ga izostaviš, blok se jednostavno ne prikazuje.
 3. (Opcionalno) dodaj `nemo` u `scripts/capture-projects.mjs` (`PROJECTS` polje)
    za automatsko snimanje.
 

@@ -144,10 +144,10 @@
           </p>
 
           <h1 class="hero__title">
-            <span class="line"><span>NE RADIMO</span></span>
-            <span class="line"><span>SAMO STRANICE.</span></span>
-            <span class="line line--accent"><span>GRADIMO</span></span>
-            <span class="line line--accent"><span>DIGITALNI DOJAM.</span></span>
+            <span class="line"><span>TVRTKE PAMTE</span></span>
+            <span class="line"><span>PO DOJMU.</span></span>
+            <span class="line line--accent"><span>MI GA</span></span>
+            <span class="line line--accent"><span>DIZAJNIRAMO.</span></span>
           </h1>
 
           <p class="hero__desc reveal-line">
@@ -230,6 +230,61 @@
             cjelinu.
           </p>
         </div>
+      </section>
+
+      <!-- KAKO RADIMO / TRUST -->
+      <section class="trust" id="pristup" aria-label="Kako radimo">
+        <div class="trust__head">
+          <span class="eyebrow">KAKO RADIMO</span>
+          <p class="trust__lead">
+            Bez agencijskih posrednika i gotovih predložaka. Izravan rad,
+            moderna tehnologija i pažnja prema svakom detalju.
+          </p>
+        </div>
+        <ul class="trust__grid">
+          <li class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H7l-3 3V5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 class="trust-card__title">Direktna komunikacija</h3>
+            <p class="trust-card__desc">Razgovarate izravno s osobom koja izrađuje vašu stranicu.</p>
+          </li>
+          <li class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 class="trust-card__title">Bez posrednika</h3>
+            <p class="trust-card__desc">Kraći put od ideje do objave, bez izgubljenih informacija.</p>
+          </li>
+          <li class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><rect x="7" y="3" width="10" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><line x1="11" y1="18" x2="13" y2="18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+            <h3 class="trust-card__title">Mobilna optimizacija</h3>
+            <p class="trust-card__desc">Stranica jednako dobro radi na svakom uređaju i ekranu.</p>
+          </li>
+          <li class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V7l7-4z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 class="trust-card__title">Cloudflare hosting</h3>
+            <p class="trust-card__desc">Sigurna, globalno distribuirana i pouzdana infrastruktura.</p>
+          </li>
+          <li class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 class="trust-card__title">Brze performanse</h3>
+            <p class="trust-card__desc">Optimiziran kod i slike za brzo učitavanje i bolji dojam.</p>
+          </li>
+          <li class="trust-card">
+            <span class="trust-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.5"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+            <h3 class="trust-card__title">Dizajn prilagođen djelatnosti</h3>
+            <p class="trust-card__desc">Vizualni smjer usklađen s vašom publikom i karakterom tvrtke.</p>
+          </li>
+        </ul>
       </section>
 
       <!-- PORTFOLIO -->
@@ -416,6 +471,10 @@
             koju želite. Javit ćemo vam se s prijedlogom smjera i sljedećih
             koraka.
           </p>
+          <p class="contact__avail">
+            <span class="contact__avail-dot" aria-hidden="true"></span>
+            Odgovaramo u najkraćem mogućem roku.
+          </p>
           <div class="contact__direct">
             <a href="mailto:oluja.store@gmail.com" data-magnetic>oluja.store@gmail.com</a>
             <span>Bilje, Hrvatska</span>
@@ -425,8 +484,8 @@
         <form class="contact__form" id="contact-form" novalidate>
           <div class="field">
             <label for="f-name">Ime i prezime</label>
-            <input id="f-name" name="name" type="text" autocomplete="name" required />
-            <span class="field__error" data-error-for="name"></span>
+            <input id="f-name" name="name" type="text" autocomplete="name" required aria-required="true" aria-describedby="err-name" />
+            <span class="field__error" id="err-name" data-error-for="name"></span>
           </div>
           <div class="field">
             <label for="f-company">Naziv tvrtke</label>
@@ -435,8 +494,8 @@
           </div>
           <div class="field">
             <label for="f-email">E-mail</label>
-            <input id="f-email" name="email" type="email" autocomplete="email" required />
-            <span class="field__error" data-error-for="email"></span>
+            <input id="f-email" name="email" type="email" autocomplete="email" required aria-required="true" aria-describedby="err-email" />
+            <span class="field__error" id="err-email" data-error-for="email"></span>
           </div>
           <div class="field">
             <label for="f-type">Vrsta projekta</label>
@@ -461,11 +520,12 @@
           </div>
           <div class="field field--full">
             <label for="f-message">Poruka</label>
-            <textarea id="f-message" name="message" rows="4" required></textarea>
-            <span class="field__error" data-error-for="message"></span>
+            <textarea id="f-message" name="message" rows="4" required aria-required="true" aria-describedby="err-message"></textarea>
+            <span class="field__error" id="err-message" data-error-for="message"></span>
           </div>
           <div class="field--full contact__submit">
             <button type="submit" class="btn btn--primary" data-magnetic><span>POŠALJI UPIT</span></button>
+            <p class="contact__hint">Otvara se vaša e-mail aplikacija s već pripremljenim upitom.</p>
             <p class="contact__note" id="contact-note" role="status" aria-live="polite"></p>
           </div>
         </form>

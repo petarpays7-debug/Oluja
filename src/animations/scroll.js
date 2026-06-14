@@ -53,8 +53,10 @@ export function initScroll() {
     );
   }
 
-  // --- generic reveal za capabilities, values, steps ---
-  const revealEls = gsap.utils.toArray('.cap, .value, .step, .section-head__title, .section-head__lead, .lab__intro');
+  // --- generic reveal za capabilities, values, steps, trust ---
+  const revealEls = gsap.utils.toArray(
+    '.cap, .value, .step, .section-head__title, .section-head__lead, .lab__intro, .trust__lead'
+  );
   revealEls.forEach((el) => {
     gsap.from(el, {
       y: 40,
@@ -63,6 +65,20 @@ export function initScroll() {
       ease: 'power3.out',
       scrollTrigger: { trigger: el, start: 'top 85%' }
     });
+  });
+
+  // trust kartice: blagi stagger po retku
+  ScrollTrigger.batch('.trust-card', {
+    start: 'top 88%',
+    onEnter: (batch) =>
+      gsap.from(batch, {
+        y: 30,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.08,
+        ease: 'power3.out',
+        overwrite: true
+      })
   });
 
   // --- process rail + active steps ---
@@ -93,13 +109,20 @@ function initProcess() {
     });
   }
 
-  steps.forEach((step) => {
-    ScrollTrigger.create({
-      trigger: step,
-      start: 'top 70%',
-      end: 'bottom 60%',
-      onToggle: (self) => step.classList.toggle('is-active', self.isActive)
-    });
+  // Uvijek točno jedan aktivan korak dok je sekcija u kadru (bez „mrtve zone”).
+  const setActive = (idx) => {
+    steps.forEach((s, i) => s.classList.toggle('is-active', i === idx));
+  };
+  ScrollTrigger.create({
+    trigger: '.steps',
+    start: 'top 65%',
+    end: 'bottom 75%',
+    onUpdate: (self) => {
+      const idx = Math.min(steps.length - 1, Math.floor(self.progress * steps.length));
+      setActive(idx);
+    },
+    onEnter: () => setActive(0),
+    onEnterBack: () => setActive(steps.length - 1)
   });
 }
 
