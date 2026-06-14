@@ -20,36 +20,8 @@ export function initScroll() {
 
   if (reduced) return;
 
-  // --- statement: linije se pale jedna po jedna ---
-  const stmLines = gsap.utils.toArray('.stm-line');
-  stmLines.forEach((line) => {
-    ScrollTrigger.create({
-      trigger: line,
-      start: 'top 70%',
-      end: 'bottom 40%',
-      onEnter: () => line.classList.add('is-lit'),
-      onLeaveBack: () => line.classList.remove('is-lit')
-    });
-  });
-  gsap.from(stmLines, {
-    yPercent: 60,
-    opacity: 0,
-    duration: 0.9,
-    stagger: 0.1,
-    ease: 'power4.out',
-    scrollTrigger: { trigger: '.statement', start: 'top 70%' }
-  });
-
-  // centrirani vertikalni akcent „izraste” na ulazu u sekciju
-  const accent = document.querySelector('.statement__accent');
-  if (accent) {
-    ScrollTrigger.create({
-      trigger: '.statement',
-      start: 'top 75%',
-      once: true,
-      onEnter: () => accent.classList.add('is-grown')
-    });
-  }
+  // Uvodna izjava (statement) ima vlastitu kinematsku scenu — vidi
+  // animations/signature.js. Ovdje je više ne diramo.
 
   // --- generic reveal za capabilities, values, steps, trust ---
   const revealEls = gsap.utils.toArray(

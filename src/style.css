@@ -818,24 +818,43 @@ section {
   100% { transform: translateY(100%); }
 }
 
-/* ---------- STATEMENT (uvodna izjava) ---------- */
+/* ---------- STATEMENT (kinematska signature scena) ---------- */
 .statement {
   position: relative;
-  padding: clamp(8rem, 22vh, 17rem) var(--gutter);
-  display: grid;
-  place-items: center;
+  background: #020305;
   overflow: hidden;
 }
-/* Signature canvas (leptiri / svjetlosne forme) — iza teksta. */
-.statement__fx {
+/* Meko stapanje u sljedeću (portfolio) sekciju — bez vidljivog šava. */
+.statement::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 18vh;
+  pointer-events: none;
+  z-index: 4;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+}
+/* Scena: zadano statična (fallback / no-JS), centrirana editorial izjava. */
+.statement__scene {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: clamp(8rem, 22vh, 17rem) var(--gutter);
+  min-height: 60vh;
+}
+/* WebGL / 2D canvas signature platno. */
+.statement__canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
   pointer-events: none;
+  display: none;
 }
-/* Mekani centrirani sjaj koji daje fokus i dubinu izjavi. */
+/* Mekani centrirani sjaj — vidljiv u fallback/reduced modu; u kino-modu crta ga canvas. */
 .statement__glow {
   position: absolute;
   top: 50%;
@@ -861,6 +880,47 @@ section {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+/* === KINO MOD (WebGL desktop / 2D lite) === */
+.statement[data-mode='webgl'],
+.statement[data-mode='lite'] {
+  height: 175vh;
+}
+.statement[data-mode='lite'] {
+  height: 150vh;
+}
+.statement[data-mode='webgl'] .statement__scene,
+.statement[data-mode='lite'] .statement__scene {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 0;
+  padding: 0;
+}
+.statement[data-mode='webgl'] .statement__canvas,
+.statement[data-mode='lite'] .statement__canvas {
+  display: block;
+}
+/* Semantički tekst ostaje za a11y/SEO, ali je vizualno skriven (canvas preuzima). */
+.statement[data-mode='webgl'] .statement__inner,
+.statement[data-mode='lite'] .statement__inner {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  height: max-content;
+  opacity: 0;
+  pointer-events: none;
+}
+.statement[data-mode='webgl'] .statement__glow,
+.statement[data-mode='lite'] .statement__glow {
+  display: none;
+}
+
+/* === REDUCED MOTION MOD === */
+.statement[data-mode='reduced'] .statement__canvas {
+  display: block;
+  z-index: 0;
 }
 .statement__eyebrow {
   font-family: var(--font-display);
@@ -2181,9 +2241,12 @@ section {
     display: none !important;
   }
   .hero__canvas,
-  .hero__scrollhint span::after,
-  .statement__fx {
+  .hero__scrollhint span::after {
     display: none;
+  }
+  /* U reduced modu sekcija ne smije biti visoka ni pinned. */
+  .statement[data-mode='reduced'] {
+    height: auto !important;
   }
   .hero__title .line > span,
   .reveal-line,

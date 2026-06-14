@@ -1,196 +1,401 @@
-import { prefersReducedMotion, isMobile } from '../utils/performance.js';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { prefersReducedMotion, isMobile, supportsWebGL } from '../utils/performance.js';
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
- * Signature moment uvodne izjave: nekoliko elegantnih, svjetlosnih
- * leptira / krilatih formi koje se rađaju iza teksta, prolaze oko slova
- * i tiho odlebde prema rubovima gdje se rasprše.
+ * Orkestrator kinematske "signature" scene uvodne izjave.
  *
- * Premium i suptilno: malen broj formi, aditivno stapanje, meki sjaj,
- * plavo–ljubičasta paleta. Gasi se izvan kadra, preskače reduced-motion,
- * a na mobitelu radi pojednostavljenu, lakšu verziju.
+ *  - desktop + WebGL  → puna scena (src/three/statement-scene.js)
+ *  - mobitel / bez WebGL-a → laka 2D verzija (canvas: rez + pad traka + ~20 leptira)
+ *  - prefers-reduced-motion → statičan tekst + par mirnih silueta
+ *
+ * Semantički tekst uvijek ostaje u DOM-u (a11y/SEO/no-JS).
  */
 export function initSignature() {
-  if (prefersReducedMotion()) return;
-
-  const canvas = document.getElementById('statement-fx');
   const section = document.getElementById('statement');
-  if (!canvas || !section) return;
+  const sceneEl = document.getElementById('statement-scene');
+  const canvas = document.getElementById('statement-canvas');
+  if (!section || !sceneEl || !canvas) return;
 
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  const mobile = isMobile();
-  const DPR = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
-
-  // Manje formi i bez skupog sjaja na mobitelu.
-  const MAX_ALIVE = mobile ? 3 : 6;
-  const USE_GLOW = !mobile;
-
-  let w = 0;
-  let h = 0;
-  let raf = null;
-  let running = false;
-  let lastSpawn = 0;
-  let started = false;
-  const flutters = [];
-
-  function resize() {
-    const r = section.getBoundingClientRect();
-    w = r.width;
-    h = r.height;
-    canvas.width = Math.round(w * DPR);
-    canvas.height = Math.round(h * DPR);
-    canvas.style.width = `${w}px`;
-    canvas.style.height = `${h}px`;
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  if (prefersReducedMotion()) {
+    runReduced(section, canvas);
+    return;
   }
 
-  const rand = (a, b) => a + Math.random() * (b - a);
+  const mobile = isMobile();
+  const webgl = supportsWebGL();
 
-  // Izvor: oko sredine teksta, blago iznad centra sekcije.
-  function spawn() {
-    if (flutters.length >= MAX_ALIVE) return;
-    const cx = w * rand(0.4, 0.6);
-    const cy = h * rand(0.42, 0.56);
-    const dir = rand(0, Math.PI * 2);
-    const speed = rand(0.18, 0.42);
-    flutters.push({
-      x: cx,
-      y: cy,
-      vx: Math.cos(dir) * speed,
-      vy: Math.sin(dir) * speed - rand(0.05, 0.22), // blagi uzgon prema gore
-      size: rand(mobile ? 9 : 11, mobile ? 15 : 24),
-      rot: rand(-0.5, 0.5),
-      vrot: rand(-0.004, 0.004),
-      flap: rand(0, Math.PI * 2),
-      flapSpeed: rand(0.12, 0.2),
-      hue: rand(0, 1), // 0 = plava, 1 = ljubičasta
-      life: 0,
-      maxLife: rand(320, 520), // u frame-ovima (~5-8s)
-      drift: rand(0.4, 1.1)
+  if (webgl && !mobile) runWebGL(section, sceneEl, canvas);
+  else runLite(section, sceneEl, canvas, { mobile });
+}
+
+/* ============================ WEBGL (desktop) ============================ */
+function runWebGL(section, sceneEl, canvas) {
+  section.dataset.mode = 'webgl';
+  let scene = null;
+  let st = null;
+
+  const shake = () => {
+    gsap.fromTo(
+      sceneEl,
+      { x: 0, y: 0 },
+      {
+        x: 'random(-3,3)',
+        y: 'random(-2,2)',
+        duration: 0.05,
+        repeat: 5,
+        yoyo: true,
+        ease: 'none',
+        onComplete: () => gsap.set(sceneEl, { x: 0, y: 0 })
+      }
+    );
+    gsap.fromTo(
+      canvas,
+      { filter: 'blur(3px)' },
+      { filter: 'blur(0px)', duration: 0.4, ease: 'power2.out' }
+    );
+  };
+
+  import('../three/statement-scene.js')
+    .then(({ createStatementScene }) => ready(createStatementScene))
+    .catch(() => {
+      // WebGL modul pao → 2D fallback
+      delete section.dataset.mode;
+      runLite(section, sceneEl, canvas, { mobile: false });
+    });
+
+  function ready(createStatementScene) {
+    const fontsReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    fontsReady.then(() => {
+      scene = createStatementScene(canvas, { mobile: false });
+      scene.setShake(shake);
+      scene.resize();
+
+      // Dev-only hook za determinističku QA (uklonjen iz produkcijskog builda).
+      if (import.meta.env.DEV) window.__statementScene = scene;
+
+      // renderiraj samo dok je sekcija u kadru
+      const io = new IntersectionObserver(
+        (ents) =>
+          ents.forEach((e) => (e.isIntersecting ? scene.start() : scene.stop())),
+        { rootMargin: '10% 0px' }
+      );
+      io.observe(section);
+
+      // scroll vodi arrival/tension; prag pokreće udar
+      st = ScrollTrigger.create({
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: true,
+        onUpdate: (self) => {
+          if (!scene) return;
+          if (!scene.hasPlayed) {
+            scene.setReveal(Math.min(1, self.progress / 0.3));
+            if (self.progress >= 0.34) scene.trigger();
+          }
+        },
+        onLeaveBack: () => scene && scene.reset()
+      });
+
+      window.addEventListener('resize', onResize, { passive: true });
+      requestAnimationFrame(() => ScrollTrigger.refresh());
     });
   }
 
-  // Jedno krilo (gornje + donje), nacrtano u +x; lijevo se zrcali.
-  function wing(s) {
-    ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.bezierCurveTo(0.35 * s, -0.62 * s, 1.05 * s, -0.7 * s, 1.18 * s, -0.22 * s);
-    ctx.bezierCurveTo(1.28 * s, 0.12 * s, 0.7 * s, 0.18 * s, 0, 0);
-    ctx.closePath();
-    ctx.fill();
-    // donje, manje krilo
-    ctx.beginPath();
-    ctx.moveTo(0, 0.05 * s);
-    ctx.bezierCurveTo(0.28 * s, 0.32 * s, 0.74 * s, 0.5 * s, 0.78 * s, 0.86 * s);
-    ctx.bezierCurveTo(0.8 * s, 1.06 * s, 0.34 * s, 0.74 * s, 0, 0.28 * s);
-    ctx.closePath();
-    ctx.fill();
+  let rT;
+  function onResize() {
+    clearTimeout(rT);
+    rT = setTimeout(() => {
+      scene && scene.resize();
+      st && st.refresh();
+    }, 200);
+  }
+}
+
+/* ============================ LITE 2D (mobitel / bez WebGL-a) ============================ */
+function runLite(section, sceneEl, canvas, { mobile }) {
+  section.dataset.mode = 'lite';
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    delete section.dataset.mode; // pokaži DOM tekst
+    return;
   }
 
-  function drawFlutter(f) {
-    const t = f.life / f.maxLife;
-    // mek ulaz/izlaz: 0 -> fade in -> hold -> fade out
-    const alpha =
-      (t < 0.18 ? t / 0.18 : t > 0.7 ? Math.max(0, (1 - t) / 0.3) : 1) *
-      (f.fade ?? 1);
-    if (alpha <= 0.01) return;
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  let W = 0;
+  let H = 0;
+  let textCanvas = null;
+  let textW = 0;
+  let textH = 0;
+  let textBox = { x: 0, y: 0, w: 0, h: 0 };
 
-    const s = f.size;
-    const open = 0.32 + 0.68 * Math.abs(Math.sin(f.flap)); // zamah krila
+  const LINES = [
+    { t: 'VAŠA WEB STRANICA ČESTO JE PRVI', blue: false },
+    { t: 'KONTAKT KUPCA S VAŠOM TVRTKOM.', blue: false },
+    { t: 'POBRINUT ĆEMO SE DA TAJ PRVI', blue: true },
+    { t: 'DOJAM NE IZGLEDA PROSJEČNO.', blue: true }
+  ];
 
-    const blue = [114, 164, 255];
-    const violet = [138, 120, 255];
-    const c = blue.map((b, i) => Math.round(b + (violet[i] - b) * f.hue));
-    const rgb = `${c[0]}, ${c[1]}, ${c[2]}`;
+  function buildText() {
+    const maxW = W * (mobile ? 0.9 : 0.7);
+    let fontPx = mobile ? 30 : 54;
+    const off = document.createElement('canvas');
+    const o = off.getContext('2d');
+    const fit = () => {
+      o.font = `700 ${fontPx}px "Space Grotesk", system-ui, sans-serif`;
+      let widest = 0;
+      LINES.forEach((l) => (widest = Math.max(widest, o.measureText(l.t).width)));
+      return widest;
+    };
+    while (fit() > maxW && fontPx > 12) fontPx -= 1;
+    const lineH = fontPx * 1.2;
+    const coupleGap = fontPx * 0.5;
+    const widest = fit();
+    const pad = fontPx * 0.6;
+    textW = Math.ceil(widest + pad * 2);
+    textH = Math.ceil(lineH * 4 + coupleGap + pad);
+    off.width = Math.ceil(textW * DPR);
+    off.height = Math.ceil(textH * DPR);
+    o.scale(DPR, DPR);
+    o.font = `700 ${fontPx}px "Space Grotesk", system-ui, sans-serif`;
+    o.textAlign = 'center';
+    o.textBaseline = 'middle';
+    const ys = [];
+    let y = pad * 0.5 + lineH * 0.5;
+    ys.push(y);
+    ys.push((y += lineH));
+    y += coupleGap;
+    ys.push((y += lineH));
+    ys.push((y += lineH));
+    LINES.forEach((l, i) => {
+      o.fillStyle = l.blue ? '#74a6ff' : '#f4f4f1';
+      o.globalAlpha = l.blue ? 0.85 : 1;
+      o.fillText(l.t, textW / 2, ys[i]);
+    });
+    o.globalAlpha = 1;
+    textCanvas = off;
+  }
 
+  function resize() {
+    const r = sceneEl.getBoundingClientRect();
+    W = r.width;
+    H = r.height;
+    canvas.width = Math.round(W * DPR);
+    canvas.height = Math.round(H * DPR);
+    canvas.style.width = `${W}px`;
+    canvas.style.height = `${H}px`;
+    buildText();
+    const scale = Math.min(1, (W * (mobile ? 0.92 : 0.66)) / textW);
+    const dw = textW * scale;
+    const dh = textH * scale;
+    textBox = { x: (W - dw) / 2, y: H * 0.42 - dh / 2, w: dw, h: dh };
+  }
+
+  // 3 dijagonalna reza u koordinatama textBox-a (nx,ny u 0..1)
+  const CUTS = [
+    { m: -0.42, b: 0.34 },
+    { m: -0.5, b: 0.55 },
+    { m: -0.34, b: 0.74 }
+  ];
+  // 4 trake (gornja ostaje) – po-traci parametri pada
+  const BANDS = [
+    { delay: 0, fall: 0, rot: 0 }, // vrh
+    { delay: 0.05, fall: 1.2, rot: 0.18 },
+    { delay: 0.12, fall: 1.5, rot: -0.22 },
+    { delay: 0.18, fall: 1.8, rot: 0.26 }
+  ];
+
+  // leptiri 2D
+  const NB = mobile ? 22 : 30;
+  const flies = [];
+
+  function spawnFlies() {
+    flies.length = 0;
+    for (let i = 0; i < NB; i++) {
+      const cut = CUTS[i % 3];
+      const nx = Math.random();
+      const ny = cut.m * (nx - 0.5) + cut.b;
+      flies.push({
+        x: textBox.x + nx * textBox.w,
+        y: textBox.y + ny * textBox.h,
+        vx: (Math.random() - 0.5) * 120,
+        vy: -40 - Math.random() * 140,
+        s: (mobile ? 9 : 12) + Math.random() * (mobile ? 8 : 14),
+        rot: Math.random() * 6.28,
+        flap: Math.random() * 6.28,
+        flapV: 8 + Math.random() * 8,
+        delay: Math.random() * 0.7,
+        tint: Math.random() < 0.2 ? 1 : 0,
+        op: 0
+      });
+    }
+  }
+
+  function drawButterfly(f) {
+    const open = 0.3 + 0.7 * Math.abs(Math.sin(f.flap));
     ctx.save();
-    ctx.translate(f.x, f.y);
+    ctx.translate(f.x * DPR, f.y * DPR);
+    ctx.scale(DPR, DPR);
     ctx.rotate(f.rot);
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = alpha * 0.55;
-
-    const grad = ctx.createLinearGradient(-s, 0, s, 0);
-    grad.addColorStop(0, `rgba(${rgb}, 0.05)`);
-    grad.addColorStop(0.5, `rgba(${rgb}, 0.5)`);
-    grad.addColorStop(1, `rgba(${rgb}, 0.05)`);
-    ctx.fillStyle = grad;
-
-    if (USE_GLOW) {
-      ctx.shadowColor = `rgba(${rgb}, 0.65)`;
-      ctx.shadowBlur = s * 0.9;
-    }
-
-    // desno krilo
-    ctx.save();
-    ctx.scale(open, 1);
-    wing(s);
-    ctx.restore();
-    // lijevo krilo (zrcaljeno)
-    ctx.save();
-    ctx.scale(-open, 1);
-    wing(s);
-    ctx.restore();
-
-    // tijelo — tanka svjetlosna nit
-    ctx.shadowBlur = 0;
-    ctx.globalAlpha = alpha * 0.6;
-    ctx.fillStyle = `rgba(${rgb}, 0.9)`;
-    ctx.fillRect(-0.6, -s * 0.5, 1.2, s * 1.15);
-
+    ctx.globalAlpha = f.op;
+    const edge = f.tint ? 'rgba(200,220,255,0.9)' : 'rgba(60,140,255,0.85)';
+    const wing = (side) => {
+      ctx.save();
+      ctx.scale(side * open, 1);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.bezierCurveTo(0.35 * f.s, -0.62 * f.s, 1.05 * f.s, -0.7 * f.s, 1.16 * f.s, -0.18 * f.s);
+      ctx.bezierCurveTo(1.26 * f.s, 0.12 * f.s, 0.6 * f.s, 0.16 * f.s, 0, 0);
+      ctx.moveTo(0, 0.05 * f.s);
+      ctx.bezierCurveTo(0.3 * f.s, 0.34 * f.s, 0.74 * f.s, 0.5 * f.s, 0.7 * f.s, 0.84 * f.s);
+      ctx.bezierCurveTo(0.66 * f.s, 1.0 * f.s, 0.2 * f.s, 0.6 * f.s, 0, 0.22 * f.s);
+      ctx.fillStyle = 'rgba(10,13,20,0.92)';
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = edge;
+      ctx.stroke();
+      ctx.restore();
+    };
+    wing(1);
+    wing(-1);
     ctx.restore();
   }
 
-  function frame() {
+  let raf = null;
+  let running = false;
+  let reveal = 0;
+  let triggered = false;
+  let played = false;
+  let tStrike = 0;
+  let last = 0;
+
+  function render(now) {
     if (!running) return;
-    ctx.clearRect(0, 0, w, h);
+    const dt = Math.min(0.05, (now - last) / 1000 || 0);
+    last = now;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const now = performance.now();
-    // tihi, rijetki dolazak novih leptira dok je sekcija u kadru
-    const interval = started && flutters.length < 2 ? 900 : mobile ? 4200 : 2600;
-    if (now - lastSpawn > interval && flutters.length < MAX_ALIVE) {
-      spawn();
-      lastSpawn = now;
-    }
+    const prog = triggered ? Math.min(1, (now - tStrike) / 1000 / (mobile ? 1.9 : 2.4)) : 0;
 
-    for (let i = flutters.length - 1; i >= 0; i--) {
-      const f = flutters[i];
-      f.life++;
-      f.flap += f.flapSpeed;
-      f.rot += f.vrot;
-      // lebdeća putanja: zamah + spori drift prema van
-      f.x += f.vx + Math.sin(f.life * 0.03) * 0.25 * f.drift;
-      f.y += f.vy + Math.cos(f.life * 0.025) * 0.12 * f.drift;
-      f.vy -= 0.0006; // postupni uzgon
-
-      // rasprši se kad izađe iz kadra ili istekne život
-      const out =
-        f.x < -40 || f.x > w + 40 || f.y < -40 || f.y > h + 40;
-      if (f.life >= f.maxLife || out) {
-        flutters.splice(i, 1);
-        continue;
+    if (!triggered) {
+      // arrival: tekst se pojavi
+      ctx.save();
+      ctx.globalAlpha = reveal;
+      ctx.drawImage(textCanvas, textBox.x * DPR, textBox.y * DPR, textBox.w * DPR, textBox.h * DPR);
+      ctx.restore();
+    } else {
+      // pad traka po dijagonalnim rezovima — transform PA clip PA crtanje,
+      // da se traka pomiče kruto (bez duplog/ghost teksta).
+      for (let bi = 0; bi < 4; bi++) {
+        const band = BANDS[bi];
+        const L = Math.max(0, Math.min(1, (prog - band.delay) / (1 - band.delay)));
+        const g = L * L;
+        const cxp = (textBox.x + textBox.w / 2) * DPR;
+        const topY = (textBox.y + (bi === 0 ? 0 : CUTS[bi - 1].b * textBox.h)) * DPR;
+        const dy = g * band.fall * textBox.h * DPR;
+        ctx.save();
+        ctx.translate(cxp, topY + dy);
+        ctx.rotate(band.rot * g);
+        ctx.translate(-cxp, -topY);
+        ctx.beginPath();
+        bandPath(ctx, bi);
+        ctx.clip();
+        ctx.globalAlpha = 1 - Math.max(0, (L - 0.6) / 0.4);
+        ctx.drawImage(
+          textCanvas,
+          textBox.x * DPR,
+          textBox.y * DPR,
+          textBox.w * DPR,
+          textBox.h * DPR
+        );
+        ctx.restore();
       }
-      drawFlutter(f);
+      // slash flash (kratko)
+      const sl = Math.max(0, 1 - (now - tStrike) / 480);
+      if (sl > 0) {
+        ctx.save();
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = sl;
+        ctx.strokeStyle = 'rgba(190,212,255,0.95)';
+        ctx.lineWidth = 2 * DPR;
+        ctx.shadowColor = 'rgba(120,170,255,0.9)';
+        ctx.shadowBlur = 10 * DPR;
+        CUTS.forEach((cut) => {
+          ctx.beginPath();
+          const y0 = (textBox.y + (cut.m * -0.5 + cut.b) * textBox.h) * DPR;
+          const y1 = (textBox.y + (cut.m * 0.5 + cut.b) * textBox.h) * DPR;
+          ctx.moveTo(textBox.x * DPR, y0);
+          ctx.lineTo((textBox.x + textBox.w) * DPR, y1);
+          ctx.stroke();
+        });
+        ctx.restore();
+      }
+      // leptiri
+      const bt = (now - tStrike) / 1000;
+      flies.forEach((f) => {
+        if (bt < f.delay) return;
+        f.flap += f.flapV * dt;
+        f.vy += 60 * dt; // blagi pad pa let
+        f.vx += Math.sin(bt * 1.5 + f.rot) * 30 * dt;
+        f.x += f.vx * dt;
+        f.y += f.vy * dt;
+        f.rot += dt * 0.4;
+        f.op = Math.min(1, f.op + dt * 2);
+        if (f.y < -40 || f.x < -40 || f.x > W + 40) f.op = Math.max(0, f.op - dt * 2);
+        drawButterfly(f);
+      });
     }
+    raf = requestAnimationFrame(render);
+  }
 
-    raf = requestAnimationFrame(frame);
+  function bandPath(c, bi) {
+    const x0 = textBox.x * DPR;
+    const x1 = (textBox.x + textBox.w) * DPR;
+    const top = bi === 0 ? textBox.y * DPR : null;
+    const yAt = (cut, side) => (textBox.y + (cut.m * (side - 0.5) + cut.b) * textBox.h) * DPR;
+    c.beginPath();
+    if (bi === 0) {
+      c.moveTo(x0, textBox.y * DPR);
+      c.lineTo(x1, textBox.y * DPR);
+      c.lineTo(x1, yAt(CUTS[0], 1));
+      c.lineTo(x0, yAt(CUTS[0], 0));
+    } else if (bi < 3) {
+      c.moveTo(x0, yAt(CUTS[bi - 1], 0));
+      c.lineTo(x1, yAt(CUTS[bi - 1], 1));
+      c.lineTo(x1, yAt(CUTS[bi], 1));
+      c.lineTo(x0, yAt(CUTS[bi], 0));
+    } else {
+      c.moveTo(x0, yAt(CUTS[2], 0));
+      c.lineTo(x1, yAt(CUTS[2], 1));
+      c.lineTo(x1, (textBox.y + textBox.h) * DPR);
+      c.lineTo(x0, (textBox.y + textBox.h) * DPR);
+    }
+    c.closePath();
+  }
+
+  function trigger() {
+    if (played) return;
+    played = true;
+    triggered = true;
+    tStrike = performance.now();
+    spawnFlies();
+    if (navigator.vibrate && mobile) navigator.vibrate(12);
+  }
+  function reset() {
+    played = false;
+    triggered = false;
+    reveal = 0;
   }
 
   function start() {
     if (running) return;
     running = true;
-    if (!started) {
-      // početni nježni „izlet” od nekoliko leptira
-      started = true;
-      const burst = mobile ? 3 : 5;
-      for (let i = 0; i < burst; i++) {
-        setTimeout(() => running && spawn(), i * 220);
-      }
-    }
-    lastSpawn = performance.now();
-    raf = requestAnimationFrame(frame);
+    last = performance.now();
+    raf = requestAnimationFrame(render);
   }
-
   function stop() {
     running = false;
     if (raf) cancelAnimationFrame(raf);
@@ -198,34 +403,95 @@ export function initSignature() {
   }
 
   resize();
-  let resizeT;
+  let rT;
   window.addEventListener(
     'resize',
     () => {
-      clearTimeout(resizeT);
-      resizeT = setTimeout(resize, 200);
+      clearTimeout(rT);
+      rT = setTimeout(resize, 200);
     },
     { passive: true }
   );
 
-  // Pokreni samo dok je sekcija vidljiva — bez trošenja izvan kadra.
   const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) start();
-        else stop();
-      });
-    },
-    { threshold: 0.2 }
+    (ents) => ents.forEach((e) => (e.isIntersecting ? start() : stop())),
+    { rootMargin: '10% 0px' }
   );
   io.observe(section);
-
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) stop();
-    else if (
-      section.getBoundingClientRect().top < window.innerHeight &&
-      section.getBoundingClientRect().bottom > 0
-    )
-      start();
+  });
+
+  ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: 'bottom bottom',
+    scrub: true,
+    onUpdate: (self) => {
+      if (!played) {
+        reveal = Math.min(1, self.progress / 0.3);
+        if (self.progress >= 0.34) trigger();
+      }
+    },
+    onLeaveBack: () => reset()
+  });
+  requestAnimationFrame(() => ScrollTrigger.refresh());
+
+  if (import.meta.env.DEV) {
+    window.__statementLite = {
+      trigger,
+      reset,
+      setReveal: (v) => {
+        reveal = v;
+      }
+    };
+  }
+}
+
+/* ============================ REDUCED MOTION ============================ */
+function runReduced(section, canvas) {
+  section.dataset.mode = 'reduced';
+  // tekst ostaje vidljiv (CSS). Par mirnih silueta za eleganciju (bez animacije).
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  const sceneEl = document.getElementById('statement-scene');
+  const draw = () => {
+    const r = (sceneEl || section).getBoundingClientRect();
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(r.width * DPR);
+    canvas.height = Math.round(r.height * DPR);
+    canvas.style.width = `${r.width}px`;
+    canvas.style.height = `${r.height}px`;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const sil = [
+      { x: r.width * 0.2, y: r.height * 0.32, s: 26 },
+      { x: r.width * 0.82, y: r.height * 0.6, s: 20 },
+      { x: r.width * 0.7, y: r.height * 0.28, s: 16 }
+    ];
+    sil.forEach((b) => {
+      ctx.save();
+      ctx.translate(b.x * DPR, b.y * DPR);
+      ctx.scale(DPR, DPR);
+      ctx.globalAlpha = 0.5;
+      [1, -1].forEach((side) => {
+        ctx.save();
+        ctx.scale(side, 1);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(0.35 * b.s, -0.62 * b.s, 1.05 * b.s, -0.7 * b.s, 1.16 * b.s, -0.18 * b.s);
+        ctx.bezierCurveTo(1.26 * b.s, 0.12 * b.s, 0.6 * b.s, 0.16 * b.s, 0, 0);
+        ctx.strokeStyle = 'rgba(80,150,255,0.6)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+      });
+      ctx.restore();
+    });
+  };
+  draw();
+  let rT;
+  window.addEventListener('resize', () => {
+    clearTimeout(rT);
+    rT = setTimeout(draw, 250);
   });
 }
