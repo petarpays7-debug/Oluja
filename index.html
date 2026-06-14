@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="hr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#050505" />
+
+    <title>OLUJA — Web dizajn i izrada web stranica</title>
+    <meta
+      name="description"
+      content="OLUJA izrađuje moderne, brze i profesionalne web stranice, web trgovine i napredna digitalna iskustva za tvrtke i obrte."
+    />
+    <link rel="canonical" href="https://oluja.studio/" />
+    <meta name="robots" content="index, follow" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="OLUJA — Digitalni studio" />
+    <meta property="og:title" content="OLUJA — Web dizajn i izrada web stranica" />
+    <meta
+      property="og:description"
+      content="Moderne, brze i profesionalne web stranice, web trgovine i napredna digitalna iskustva za tvrtke i obrte."
+    />
+    <meta property="og:url" content="https://oluja.studio/" />
+    <meta property="og:image" content="/og-image-placeholder.webp" />
+    <meta property="og:locale" content="hr_HR" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OLUJA — Web dizajn i izrada web stranica" />
+    <meta
+      name="twitter:description"
+      content="Moderne, brze i profesionalne web stranice i web trgovine za tvrtke i obrte."
+    />
+    <meta name="twitter:image" content="/og-image-placeholder.webp" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "name": "OLUJA",
+        "legalName": "OLUJA, obrt za trgovinu na malo i usluge, vl. Petar Husar",
+        "description": "Digitalni studio — web dizajn, izrada web stranica, web trgovine i animirane web stranice za tvrtke i obrte. Područje rada Bilje i Osijek.",
+        "email": "oluja.store@gmail.com",
+        "url": "https://oluja.studio/",
+        "image": "https://oluja.studio/og-image-placeholder.webp",
+        "foundingDate": "2025",
+        "areaServed": "HR",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Savska ulica 14",
+          "addressLocality": "Bilje",
+          "addressCountry": "HR"
+        },
+        "knowsAbout": [
+          "izrada web stranica",
+          "web dizajn",
+          "izrada web trgovina",
+          "animirane web stranice",
+          "održavanje web stranica"
+        ]
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#hero">Preskoči na sadržaj</a>
+
+    <!-- PRELOADER -->
+    <div class="preloader" id="preloader" aria-hidden="true">
+      <div class="preloader__inner">
+        <svg class="preloader__logo" viewBox="0 0 520 120" role="img" aria-label="OLUJA">
+          <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">OLUJA</text>
+        </svg>
+        <span class="preloader__sub">DIGITALNI STUDIO</span>
+        <span class="preloader__pulse" aria-hidden="true"></span>
+      </div>
+      <div class="preloader__wipe" aria-hidden="true"></div>
+    </div>
+
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+
+    <!-- CUSTOM CURSOR (popunjava cursor.js) -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+    <!-- NAVIGATION -->
+    <header class="nav" id="nav">
+      <div class="nav__inner">
+        <a class="nav__brand" href="#hero" aria-label="OLUJA — Digitalni studio, povratak na vrh">
+          <span class="nav__brand-name">OLUJA</span>
+          <span class="nav__brand-sub">DIGITALNI STUDIO</span>
+        </a>
+
+        <nav class="nav__menu" aria-label="Glavna navigacija">
+          <ul class="nav__list" id="nav-list"></ul>
+        </nav>
+
+        <div class="nav__actions">
+          <a class="btn btn--primary nav__cta" href="#kontakt" data-magnetic>
+            <span>POKRENI PROJEKT</span>
+          </a>
+          <button
+            class="nav__toggle"
+            id="nav-toggle"
+            aria-label="Otvori izbornik"
+            aria-expanded="false"
+            aria-controls="mobile-menu"
+          >
+            <span></span><span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+      <button class="mobile-menu__close" id="mobile-menu-close" aria-label="Zatvori izbornik">
+        ×
+      </button>
+      <nav class="mobile-menu__nav" aria-label="Mobilna navigacija">
+        <ul class="mobile-menu__list" id="mobile-menu-list"></ul>
+      </nav>
+      <a class="btn btn--primary mobile-menu__cta" href="#kontakt">
+        <span>POKRENI PROJEKT</span>
+      </a>
+      <div class="mobile-menu__meta">
+        <a href="mailto:oluja.store@gmail.com">oluja.store@gmail.com</a>
+        <span>Bilje, Hrvatska</span>
+      </div>
+    </div>
+
+    <main>
+      <!-- HERO -->
+      <section class="hero" id="hero">
+        <div class="hero__bg" aria-hidden="true">
+          <canvas class="hero__canvas" id="hero-canvas"></canvas>
+          <div class="hero__grid"></div>
+          <div class="hero__glow" id="hero-glow"></div>
+        </div>
+
+        <div class="hero__content">
+          <p class="hero__label reveal-line">
+            <span class="dot"></span>DIGITALNI STUDIO · BILJE / HRVATSKA
+          </p>
+
+          <h1 class="hero__title">
+            <span class="line"><span>NE RADIMO</span></span>
+            <span class="line"><span>SAMO STRANICE.</span></span>
+            <span class="line line--accent"><span>GRADIMO</span></span>
+            <span class="line line--accent"><span>DIGITALNI DOJAM.</span></span>
+          </h1>
+
+          <p class="hero__desc reveal-line">
+            Dizajniramo i razvijamo moderne web stranice koje tvrtkama daju
+            ozbiljniji, vrjedniji i profesionalniji digitalni nastup.
+          </p>
+          <p class="hero__desc hero__desc--sub reveal-line">
+            Dizajn, razvoj, animacije i interakcije spojeni u jedno iskustvo.
+          </p>
+
+          <div class="hero__actions reveal-line">
+            <a class="btn btn--primary" href="#projekti" data-magnetic>
+              <span>POGLEDAJ PROJEKTE</span>
+            </a>
+            <a class="btn btn--ghost" href="#kontakt" data-magnetic>
+              <span>POKRENI PROJEKT</span>
+            </a>
+          </div>
+
+          <ul class="hero__tags reveal-line" aria-label="Usluge">
+            <li>WEB DIZAJN</li>
+            <li>RAZVOJ</li>
+            <li>ANIMACIJE</li>
+            <li>WEB TRGOVINE</li>
+          </ul>
+        </div>
+
+        <!-- 3D KOMPOZICIJA -->
+        <div class="hero__stage" id="hero-stage" aria-hidden="true">
+          <div class="stage__scene" id="stage-scene">
+            <div class="browser browser--doors" data-depth="1.0" data-project="doors">
+              <div class="browser__bar">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="browser__url">doorsinterijeri-bgb.pages.dev</span>
+              </div>
+              <div class="browser__screen">
+                <img alt="Doors Interijeri — naslovna" data-asset="doors-desktop" loading="lazy" decoding="async" width="1440" height="900" />
+              </div>
+            </div>
+
+            <div class="browser browser--bimmer" data-depth="1.3" data-project="bimmer">
+              <div class="browser__bar">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="browser__url">auto-centar-bimmer.pages.dev</span>
+              </div>
+              <div class="browser__screen">
+                <img alt="Auto Centar Bimmer — naslovna" data-asset="bimmer-desktop" loading="lazy" decoding="async" width="1440" height="900" />
+              </div>
+            </div>
+
+            <div class="phone" data-depth="1.8">
+              <div class="phone__screen">
+                <img alt="Auto Centar Bimmer — mobilni prikaz" data-asset="bimmer-mobile" loading="lazy" decoding="async" width="390" height="844" />
+              </div>
+            </div>
+
+            <svg class="stage__lines" viewBox="0 0 600 600" aria-hidden="true">
+              <line x1="40" y1="120" x2="560" y2="90" />
+              <line x1="60" y1="500" x2="540" y2="540" />
+              <line x1="300" y1="0" x2="300" y2="600" class="stage__lead" />
+            </svg>
+          </div>
+          <span class="hero__scrollhint"><span></span>SKROLAJ</span>
+        </div>
+      </section>
+
+      <!-- UVODNA IZJAVA -->
+      <section class="statement" id="statement">
+        <div class="statement__rail" aria-hidden="true"></div>
+        <div class="statement__inner">
+          <p class="statement__big">
+            <span class="stm-line">Vaša web stranica često je prvi</span>
+            <span class="stm-line">kontakt kupca s vašom tvrtkom.</span>
+            <span class="stm-line stm-line--accent">Pobrinut ćemo se da taj prvi</span>
+            <span class="stm-line stm-line--accent">dojam ne izgleda prosječno.</span>
+          </p>
+          <p class="statement__sub">
+            Od jednostavne poslovne prezentacije do potpuno prilagođenog
+            interaktivnog iskustva — dizajn, kod i animacije razvijamo kao jednu
+            cjelinu.
+          </p>
+        </div>
+      </section>
+
+      <!-- PORTFOLIO -->
+      <section class="portfolio" id="projekti" aria-label="Odabrani projekti">
+        <div class="section-head section-head--center">
+          <span class="eyebrow">ODABRANI PROJEKTI</span>
+          <p class="section-head__lead">
+            Dvije različite djelatnosti. Dva potpuno različita identiteta. Ista
+            pažnja prema svakom detalju.
+          </p>
+        </div>
+
+        <div class="portfolio__sticky" id="portfolio-sticky">
+          <div class="portfolio__bgnum" id="portfolio-bgnum" aria-hidden="true">01</div>
+          <div class="portfolio__pulse" id="portfolio-pulse" aria-hidden="true"></div>
+          <div class="portfolio__panels" id="portfolio-panels"></div>
+        </div>
+
+        <!-- No-JS / fallback lista -->
+        <noscript>
+          <ul class="portfolio__fallback">
+            <li><a href="https://doorsinterijeri-bgb.pages.dev" target="_blank" rel="noopener noreferrer">Doors Interijeri</a></li>
+            <li><a href="https://auto-centar-bimmer.pages.dev" target="_blank" rel="noopener noreferrer">Auto Centar Bimmer</a></li>
+          </ul>
+        </noscript>
+      </section>
+
+      <!-- MOGUĆNOSTI -->
+      <section class="capabilities" id="usluge">
+        <div class="section-head">
+          <h2 class="section-head__title">OD IDEJE<br />DO GOTOVE STRANICE.</h2>
+          <p class="section-head__lead">
+            Sve što je potrebno za ozbiljan digitalni nastup — bez gotovih
+            predložaka i nepotrebnog kompliciranja.
+          </p>
+        </div>
+
+        <ul class="caps" id="caps">
+          <li class="cap" data-demo="design">
+            <span class="cap__n">01</span>
+            <div class="cap__body">
+              <h3 class="cap__title">WEB DIZAJN</h3>
+              <p class="cap__desc">Originalan vizualni smjer prilagođen vašoj tvrtki, publici i djelatnosti.</p>
+            </div>
+            <div class="cap__demo" aria-hidden="true"><div class="demo-grid"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+          </li>
+          <li class="cap" data-demo="build">
+            <span class="cap__n">02</span>
+            <div class="cap__body">
+              <h3 class="cap__title">IZRADA WEB STRANICA</h3>
+              <p class="cap__desc">Brze, responzivne i tehnički uređene stranice prilagođene svim uređajima.</p>
+            </div>
+            <div class="cap__demo" aria-hidden="true"><div class="demo-wire"><span></span><span></span><span></span><span></span></div></div>
+          </li>
+          <li class="cap" data-demo="motion">
+            <span class="cap__n">03</span>
+            <div class="cap__body">
+              <h3 class="cap__title">3D I ANIMACIJE</h3>
+              <p class="cap__desc">Napredne interakcije koje podižu doživljaj bez narušavanja funkcionalnosti.</p>
+            </div>
+            <div class="cap__demo" aria-hidden="true"><div class="demo-panel"><span></span></div></div>
+          </li>
+          <li class="cap" data-demo="shop">
+            <span class="cap__n">04</span>
+            <div class="cap__body">
+              <h3 class="cap__title">WEB TRGOVINE</h3>
+              <p class="cap__desc">Profesionalne trgovine s jasnom ponudom i jednostavnim putem do kupnje.</p>
+            </div>
+            <div class="cap__demo" aria-hidden="true"><div class="demo-shop"><i></i><i></i><b>+</b></div></div>
+          </li>
+          <li class="cap" data-demo="care">
+            <span class="cap__n">05</span>
+            <div class="cap__body">
+              <h3 class="cap__title">ODRŽAVANJE I RAZVOJ</h3>
+              <p class="cap__desc">Izmjene sadržaja, tehnička podrška, optimizacija i daljnji razvoj stranice.</p>
+            </div>
+            <div class="cap__demo" aria-hidden="true"><div class="demo-ver"><span>v1.0</span><span>v1.1</span><span>v1.2</span></div></div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- DIGITALNI LABORATORIJ -->
+      <section class="lab" id="lab" aria-label="Digitalni laboratorij">
+        <div class="lab__head">
+          <span class="eyebrow">DIGITALNI LABORATORIJ</span>
+          <p class="lab__intro">
+            Detalji stvaraju razliku između stranice koja samo postoji i
+            stranice koju ljudi pamte.
+          </p>
+        </div>
+
+        <div class="lab__scene" id="lab-scene">
+          <div class="lab__mesh" id="lab-mesh" aria-hidden="true"></div>
+          <div class="lab__spotlight" id="lab-spotlight" aria-hidden="true"></div>
+          <div class="lab__panels" aria-hidden="true">
+            <span class="lab-panel" data-depth="2.4"></span>
+            <span class="lab-panel" data-depth="1.6"></span>
+            <span class="lab-panel" data-depth="3.0"></span>
+          </div>
+          <h2 class="lab__title" id="lab-title">
+            <span>POMAKNI MIŠ.</span>
+            <span>POKRENI PROSTOR.</span>
+          </h2>
+          <a class="btn btn--primary lab__cta" href="#kontakt" data-magnetic>
+            <span>POKRENIMO OLUJU</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- PROCES -->
+      <section class="process" id="proces">
+        <div class="section-head">
+          <h2 class="section-head__title">JASAN PROCES.<br />BEZ NEPOTREBNOG KOMPLICIRANJA.</h2>
+        </div>
+
+        <ol class="steps" id="steps">
+          <li class="step">
+            <span class="step__n">01</span>
+            <h3 class="step__title">UPOZNAVANJE</h3>
+            <p class="step__desc">Razumijemo vašu tvrtku, ciljeve, publiku i ono po čemu se razlikujete od konkurencije.</p>
+          </li>
+          <li class="step">
+            <span class="step__n">02</span>
+            <h3 class="step__title">STRUKTURA I SMJER</h3>
+            <p class="step__desc">Definiramo sadržaj, strukturu stranice i vizualni smjer projekta.</p>
+          </li>
+          <li class="step">
+            <span class="step__n">03</span>
+            <h3 class="step__title">DIZAJN I RAZVOJ</h3>
+            <p class="step__desc">Dizajn pretvaramo u brzu, responzivnu i interaktivnu web stranicu.</p>
+          </li>
+          <li class="step">
+            <span class="step__n">04</span>
+            <h3 class="step__title">TESTIRANJE I OBJAVA</h3>
+            <p class="step__desc">Provjeravamo funkcionalnost, brzinu, responzivnost i objavljujemo stranicu.</p>
+          </li>
+          <li class="step">
+            <span class="step__n">05</span>
+            <h3 class="step__title">PODRŠKA</h3>
+            <p class="step__desc">Ostajemo dostupni za izmjene, održavanje i daljnji razvoj.</p>
+          </li>
+          <div class="steps__rail" aria-hidden="true"><span class="steps__rail-fill" id="steps-fill"></span></div>
+        </ol>
+      </section>
+
+      <!-- STUDIO -->
+      <section class="studio" id="studio">
+        <div class="studio__ghost" aria-hidden="true">NO TEMPLATES.<br />NO SHORTCUTS.</div>
+        <div class="studio__inner">
+          <div class="studio__lead">
+            <h2 class="section-head__title">MALA STRUKTURA.<br />VELIKA PAŽNJA PREMA DETALJIMA.</h2>
+            <p class="studio__text">
+              Ne prodajemo isti gotovi predložak u drugoj boji. Svaku stranicu
+              prilagođavamo djelatnosti, publici i karakteru tvrtke koju
+              predstavlja.
+            </p>
+          </div>
+          <ul class="values">
+            <li class="value">
+              <h3>DIZAJN PO MJERI</h3>
+              <p>Svaki projekt dobiva vlastiti vizualni smjer i karakter.</p>
+            </li>
+            <li class="value">
+              <h3>DIREKTNA KOMUNIKACIJA</h3>
+              <p>Bez nepotrebnih posrednika i izgubljenih informacija.</p>
+            </li>
+            <li class="value">
+              <h3>DUGOROČNA PODRŠKA</h3>
+              <p>Stranica se može mijenjati i razvijati zajedno s vašom tvrtkom.</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- KONTAKT -->
+      <section class="contact" id="kontakt">
+        <div class="contact__head">
+          <h2 class="contact__title">
+            <span>IMATE PROJEKT?</span>
+            <span class="contact__title--accent">POKRENIMO OLUJU.</span>
+          </h2>
+          <p class="contact__desc">
+            Pošaljite nekoliko osnovnih informacija o svojoj tvrtki i stranici
+            koju želite. Javit ćemo vam se s prijedlogom smjera i sljedećih
+            koraka.
+          </p>
+          <div class="contact__direct">
+            <a href="mailto:oluja.store@gmail.com" data-magnetic>oluja.store@gmail.com</a>
+            <span>Bilje, Hrvatska</span>
+          </div>
+        </div>
+
+        <form class="contact__form" id="contact-form" novalidate>
+          <div class="field">
+            <label for="f-name">Ime i prezime</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" required />
+            <span class="field__error" data-error-for="name"></span>
+          </div>
+          <div class="field">
+            <label for="f-company">Naziv tvrtke</label>
+            <input id="f-company" name="company" type="text" autocomplete="organization" />
+            <span class="field__error" data-error-for="company"></span>
+          </div>
+          <div class="field">
+            <label for="f-email">E-mail</label>
+            <input id="f-email" name="email" type="email" autocomplete="email" required />
+            <span class="field__error" data-error-for="email"></span>
+          </div>
+          <div class="field">
+            <label for="f-type">Vrsta projekta</label>
+            <select id="f-type" name="type">
+              <option>Prezentacijska web stranica</option>
+              <option>Web trgovina</option>
+              <option>Redizajn postojeće stranice</option>
+              <option>Animacije i interakcije</option>
+              <option>Održavanje</option>
+              <option>Ostalo</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="f-budget">Okvirni budžet</label>
+            <select id="f-budget" name="budget">
+              <option>Do 1.000 €</option>
+              <option>1.000–2.000 €</option>
+              <option>2.000–5.000 €</option>
+              <option>5.000 €+</option>
+              <option>Želim prvo razgovarati</option>
+            </select>
+          </div>
+          <div class="field field--full">
+            <label for="f-message">Poruka</label>
+            <textarea id="f-message" name="message" rows="4" required></textarea>
+            <span class="field__error" data-error-for="message"></span>
+          </div>
+          <div class="field--full contact__submit">
+            <button type="submit" class="btn btn--primary" data-magnetic><span>POŠALJI UPIT</span></button>
+            <p class="contact__note" id="contact-note" role="status" aria-live="polite"></p>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer" id="footer">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <span class="footer__name">OLUJA</span>
+          <span class="footer__sub">DIGITALNI STUDIO</span>
+          <div class="footer__contact">
+            <a href="mailto:oluja.store@gmail.com">oluja.store@gmail.com</a>
+            <span>Bilje, Hrvatska</span>
+          </div>
+        </div>
+
+        <nav class="footer__nav" aria-label="Footer navigacija">
+          <ul id="footer-nav"></ul>
+        </nav>
+      </div>
+
+      <div class="footer__legal" id="footer-legal"></div>
+
+      <div class="footer__bottom">
+        <ul class="footer__links">
+          <li><a href="#" data-legal="privacy">Politika privatnosti</a></li>
+          <li><a href="#" data-legal="cookies">Kolačići</a></li>
+        </ul>
+        <p class="footer__copy" id="footer-copy"></p>
+      </div>
+
+      <div class="footer__giant" aria-hidden="true"><span id="footer-giant">OLUJA</span></div>
+    </footer>
+
+    <!-- PAGE TRANSITION OVERLAY -->
+    <div class="page-wipe" id="page-wipe" aria-hidden="true">
+      <span class="page-wipe__label" id="page-wipe-label"></span>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
