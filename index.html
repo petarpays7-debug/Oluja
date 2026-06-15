@@ -214,42 +214,39 @@
         </div>
       </section>
 
-      <!-- UVODNA IZJAVA — cinematic scroll scene -->
+      <!-- UVODNA IZJAVA — cinematic digital-sculpture reveal -->
       <section class="statement" id="statement">
         <div class="stm-scene" id="stm-scene">
 
-          <!-- Deep space background — revealed through expanding central opening -->
-          <div class="stm-depth" id="stm-depth" aria-hidden="true">
-            <div class="stm-depth__glow"></div>
-            <div class="stm-depth__grid"></div>
+          <!-- WebGL glass-bloom sculpture (desktop). Empty / hidden in fallback. -->
+          <canvas class="stm-canvas" id="stm-canvas" aria-hidden="true"></canvas>
+
+          <!-- CSS-lite sculpture (mobile / no-WebGL). Layered glossy bloom. -->
+          <div class="stm-lite" id="stm-lite" aria-hidden="true">
+            <span class="stm-lite__halo"></span>
+            <span class="stm-lite__bloom"></span>
+            <span class="stm-lite__core"></span>
           </div>
 
-          <!-- Visual text layers — animated by GSAP, screen-reader hidden -->
-          <div class="stm-stage" id="stm-stage" aria-hidden="true">
-            <div class="stm-upper" id="stm-upper">
-              <span>VAŠA WEB STRANICA ČESTO JE PRVI</span>
-              <span>KONTAKT KUPCA S VAŠOM TVRTKOM.</span>
-            </div>
-            <div class="stm-lower" id="stm-lower">
-              <span>POBRINUT ĆEMO SE DA TAJ PRVI</span>
-              <span class="stm-lower__accent">DOJAM NE IZGLEDA PROSJEČNO.</span>
-            </div>
-            <p class="stm-sub-text" id="stm-sub">
-              Od jednostavne poslovne prezentacije do potpuno prilagođenog
-              interaktivnog iskustva — dizajn, kod i animacije razvijamo kao jednu cjelinu.
-            </p>
+          <!-- Atmospheric violet release overlay — bridges into next section. -->
+          <div class="stm-atmos" id="stm-atmos" aria-hidden="true"></div>
+
+          <!-- Decorative giant spatial words (echo our wording; aria-hidden). -->
+          <div class="stm-typo" aria-hidden="true">
+            <span class="stm-giant stm-giant--1" data-layer="g1">PRVI</span>
+            <span class="stm-giant stm-giant--2" data-layer="g2">DOJAM</span>
           </div>
 
-          <!-- Semantic content — always in DOM for a11y / SEO / no-JS -->
-          <div class="statement__inner">
-            <span class="statement__eyebrow">PRVI DOJAM</span>
-            <p class="statement__big">
-              <span class="stm-line">Vaša web stranica često je prvi</span>
-              <span class="stm-line">kontakt kupca s vašom tvrtkom.</span>
-              <span class="stm-line stm-line--accent">Pobrinut ćemo se da taj prvi</span>
-              <span class="stm-line stm-line--accent">dojam ne izgleda prosječno.</span>
+          <!-- Readable editorial content (semantic — a11y / SEO / no-JS). -->
+          <div class="stm-content" id="stm-content">
+            <span class="stm-eyebrow" data-layer="eyebrow">PRVI DOJAM</span>
+            <p class="stm-statement stm-statement--1" data-layer="s1">
+              Vaša web stranica često je prvi kontakt kupca s vašom tvrtkom.
             </p>
-            <p class="statement__sub">
+            <p class="stm-statement stm-statement--2" data-layer="s2">
+              Pobrinut ćemo se da taj prvi dojam ne izgleda prosječno.
+            </p>
+            <p class="stm-support" data-layer="sup">
               Od jednostavne poslovne prezentacije do potpuno prilagođenog
               interaktivnog iskustva — dizajn, kod i animacije razvijamo kao jednu cjelinu.
             </p>

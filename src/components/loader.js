@@ -25,16 +25,32 @@ export function runLoader() {
   const pulse = el.querySelector('.preloader__pulse');
   const wipe = el.querySelector('.preloader__wipe');
 
+  // Safety net: the intro is rAF-driven (gsap), which is paused while the tab
+  // is in the background. setTimeout still fires (throttled), so the site always
+  // boots even if it first loads in a hidden tab.
+  const guard = (resolve) => {
+    let done = false;
+    const settle = () => {
+      if (done) return;
+      done = true;
+      finish();
+      resolve();
+    };
+    const safety = setTimeout(settle, 2400);
+    return { settle, clear: () => clearTimeout(safety) };
+  };
+
   // Ponovni posjet: vrlo kratki fade.
   if (seen) {
     return new Promise((resolve) => {
+      const g = guard(resolve);
       gsap.to(el, {
         opacity: 0,
         duration: 0.35,
         ease: 'power2.out',
         onComplete: () => {
-          finish();
-          resolve();
+          g.clear();
+          g.settle();
         }
       });
     });
@@ -43,10 +59,11 @@ export function runLoader() {
   sessionStorage.setItem(SESSION_KEY, '1');
 
   return new Promise((resolve) => {
+    const g = guard(resolve);
     const tl = gsap.timeline({
       onComplete: () => {
-        finish();
-        resolve();
+        g.clear();
+        g.settle();
       }
     });
 
