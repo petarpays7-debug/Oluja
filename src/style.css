@@ -818,109 +818,149 @@ section {
   100% { transform: translateY(100%); }
 }
 
-/* ---------- STATEMENT (kinematska signature scena) ---------- */
+/* ---------- STATEMENT — cinematic scroll scene ---------- */
 .statement {
   position: relative;
   background: #020305;
-  overflow: hidden;
-}
-/* Meko stapanje u sljedeću (portfolio) sekciju — bez vidljivog šava. */
-.statement::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 18vh;
-  pointer-events: none;
-  z-index: 4;
-  background: linear-gradient(to bottom, transparent, var(--bg));
-}
-/* Scena: zadano statična (fallback / no-JS), centrirana editorial izjava. */
-.statement__scene {
-  position: relative;
-  display: grid;
-  place-items: center;
-  padding: clamp(8rem, 22vh, 17rem) var(--gutter);
-  min-height: 60vh;
-}
-/* WebGL / 2D canvas signature platno. */
-.statement__canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  pointer-events: none;
-  display: none;
-}
-/* Mekani centrirani sjaj — vidljiv u fallback/reduced modu; u kino-modu crta ga canvas. */
-.statement__glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(78vw, 920px);
-  height: min(60vh, 560px);
-  transform: translate(-50%, -52%);
-  background: radial-gradient(
-    ellipse at center,
-    rgba(52, 120, 255, 0.12),
-    transparent 68%
-  );
-  filter: blur(36px);
-  pointer-events: none;
-  z-index: 0;
-}
-.statement__inner {
-  position: relative;
-  z-index: 2;
-  max-width: 1180px;
-  margin: 0 auto;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
-/* === KINO MOD (WebGL desktop / 2D lite) === */
-.statement[data-mode='webgl'],
-.statement[data-mode='lite'] {
-  height: 175vh;
+/* Sticky viewport scene — base state for no-JS / reduced-motion fallback */
+.stm-scene {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: clamp(8rem, 20vh, 16rem) var(--gutter);
+  overflow: hidden;
 }
-.statement[data-mode='lite'] {
-  height: 150vh;
+
+/* Cinematic and mobile modes — JS sets data-mode attribute */
+.statement[data-mode='cinematic'],
+.statement[data-mode='mobile'] {
+  overflow: clip; /* clip content without creating a scroll container */
 }
-.statement[data-mode='webgl'] .statement__scene,
-.statement[data-mode='lite'] .statement__scene {
+.statement[data-mode='cinematic'] .stm-scene,
+.statement[data-mode='mobile'] .stm-scene {
   position: sticky;
   top: 0;
   height: 100svh;
   min-height: 0;
   padding: 0;
 }
-.statement[data-mode='webgl'] .statement__canvas,
-.statement[data-mode='lite'] .statement__canvas {
-  display: block;
+.statement[data-mode='cinematic'] {
+  height: 215vh;
 }
-/* Semantički tekst ostaje za a11y/SEO, ali je vizualno skriven (canvas preuzima). */
-.statement[data-mode='webgl'] .statement__inner,
-.statement[data-mode='lite'] .statement__inner {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  height: max-content;
-  opacity: 0;
-  pointer-events: none;
+.statement[data-mode='mobile'] {
+  height: 160vh;
 }
-.statement[data-mode='webgl'] .statement__glow,
-.statement[data-mode='lite'] .statement__glow {
-  display: none;
+/* Reduced motion — static text, no pinning */
+.statement[data-mode='reduced'] {
+  height: auto;
+}
+.statement[data-mode='reduced'] .stm-scene {
+  min-height: 72vh;
 }
 
-/* === REDUCED MOTION MOD === */
-.statement[data-mode='reduced'] .statement__canvas {
-  display: block;
+/* Deep space background — clip-path animated by GSAP from centre point */
+.stm-depth {
+  position: absolute;
+  inset: 0;
   z-index: 0;
+  clip-path: ellipse(1% 1% at 50% 50%);
+  background: radial-gradient(ellipse 80% 62% at 50% 50%, #060d1c 0%, #020305 66%);
+  will-change: clip-path;
+}
+.stm-depth__glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(680px, 76vw);
+  height: min(460px, 54vh);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(52, 120, 255, 0.3) 0%, transparent 68%);
+  filter: blur(72px);
+  pointer-events: none;
+}
+.stm-depth__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(52, 120, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(52, 120, 255, 0.055) 1px, transparent 1px);
+  background-size: 76px 76px;
+}
+
+/* Visual text stage — GSAP controls all visibility */
+.stm-stage {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 var(--gutter);
+  pointer-events: none;
+  opacity: 0; /* GSAP reveals on scroll; no-JS keeps it hidden (semantic inner shown instead) */
+}
+/* Reduced motion: show stage text without animation */
+.statement[data-mode='reduced'] .stm-stage {
+  opacity: 1;
+}
+
+.stm-upper,
+.stm-lower {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.07em;
+  will-change: transform, opacity;
+}
+.stm-upper span,
+.stm-lower span {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 2.3vw + 0.65rem, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
+  white-space: nowrap;
+}
+.stm-lower {
+  margin-top: 0.48em;
+}
+.stm-lower__accent {
+  color: var(--blue-light) !important;
+}
+.stm-sub-text {
+  margin-top: clamp(1.75rem, 3.5vh, 3rem);
+  max-width: 52ch;
+  font-family: var(--font-body);
+  font-size: clamp(0.88rem, 0.75rem + 0.4vw, 1.08rem);
+  font-weight: 400;
+  color: var(--text-dim);
+  line-height: 1.65;
+  text-align: center;
+  will-change: opacity;
+}
+
+/* Semantic inner — a11y / SEO / no-JS visible; hidden when JS drives visual text */
+.statement__inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(6rem, 18vh, 14rem) var(--gutter);
+  text-align: center;
+  pointer-events: none;
+  z-index: 1;
+}
+.has-js .statement__inner {
+  opacity: 0;
+  pointer-events: none;
 }
 .statement__eyebrow {
   font-family: var(--font-display);
@@ -929,21 +969,6 @@ section {
   text-transform: uppercase;
   color: var(--blue-light);
   margin-bottom: 1.5rem;
-}
-/* Tanki centrirani vertikalni akcent koji „izraste” na ulazu u kadar. */
-.statement__accent {
-  width: 1px;
-  height: clamp(2.5rem, 6vh, 4.5rem);
-  margin-bottom: clamp(2rem, 5vh, 3.5rem);
-  background: linear-gradient(180deg, var(--blue-light), transparent);
-  transform-origin: top;
-  transform: scaleY(0);
-}
-.has-js .statement__accent {
-  transition: transform 1s var(--ease);
-}
-.statement__accent.is-grown {
-  transform: scaleY(1);
 }
 .statement__big {
   font-family: var(--font-display);
@@ -956,12 +981,8 @@ section {
 .stm-line {
   display: block;
   color: var(--text-dim);
-  transition: color 0.6s var(--ease);
 }
-.stm-line.is-lit {
-  color: var(--text);
-}
-.stm-line--accent.is-lit {
+.stm-line--accent {
   color: var(--blue-light);
 }
 .statement__sub {
@@ -970,6 +991,16 @@ section {
   color: var(--text-dim);
   font-size: clamp(1rem, 1.5vw, 1.25rem);
   text-wrap: balance;
+}
+
+/* Mobile: allow text to wrap and scale down */
+@media (max-width: 640px) {
+  .stm-upper span,
+  .stm-lower span {
+    font-size: clamp(1.05rem, 4.6vw, 1.55rem);
+    white-space: normal;
+    max-width: 88vw;
+  }
 }
 
 /* ---------- PORTFOLIO ---------- */
@@ -2244,14 +2275,32 @@ section {
   .hero__scrollhint span::after {
     display: none;
   }
-  /* U reduced modu sekcija ne smije biti visoka ni pinned. */
-  .statement[data-mode='reduced'] {
+  /* Statement — no pinning, no scroll trapping, no perspective */
+  .statement[data-mode='cinematic'],
+  .statement[data-mode='mobile'] {
     height: auto !important;
+  }
+  .statement[data-mode='cinematic'] .stm-scene,
+  .statement[data-mode='mobile'] .stm-scene {
+    position: relative !important;
+    height: auto !important;
+    min-height: 72vh !important;
+    padding: clamp(8rem, 18vh, 14rem) var(--gutter) !important;
+  }
+  .stm-stage,
+  .stm-upper,
+  .stm-lower,
+  .stm-sub-text {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .stm-depth {
+    clip-path: ellipse(80% 65% at 50% 50%) !important;
+    opacity: 0.35 !important;
   }
   .hero__title .line > span,
   .reveal-line,
   .stm-line,
-  .statement__accent,
   .pf-panel,
   .trust-card,
   .step,
@@ -2260,11 +2309,11 @@ section {
     transform: none !important;
     visibility: visible !important;
   }
-  .statement__accent {
-    transform: scaleY(1) !important;
-  }
   .stm-line {
-    color: var(--text);
+    color: var(--text-dim);
+  }
+  .stm-line--accent {
+    color: var(--blue-light);
   }
   .portfolio__sticky {
     position: relative;
