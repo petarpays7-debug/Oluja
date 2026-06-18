@@ -937,39 +937,7 @@ section {
   will-change: opacity, transform;
 }
 
-/* ===== Decorative giant spatial typography (behind the object) ===== */
-.stm-typo {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  display: none;
-}
-.statement[data-mode='cinematic'] .stm-typo {
-  display: block;
-}
-.stm-giant {
-  position: absolute;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(7rem, 19vw, 19rem);
-  line-height: 0.82;
-  letter-spacing: -0.04em;
-  color: #f4f4f1;
-  white-space: nowrap;
-  will-change: transform, opacity;
-}
-.stm-giant--1 {
-  top: 16%;
-  left: clamp(1.5rem, 5vw, 7rem);
-}
-.stm-giant--2 {
-  bottom: 13%;
-  right: clamp(1.5rem, 5vw, 7rem);
-  color: #e7ecff;
-}
-
-/* ===== Readable editorial content ===== */
+/* ===== Editorial typography (single semantic copy) ===== */
 .stm-content {
   position: relative;
   z-index: 2;
@@ -1013,46 +981,58 @@ section {
   text-wrap: balance;
 }
 
-/* In cinematic mode the readable content is art-directed into corners and
-   driven by GSAP; JS sets the initial transforms. */
+/* Cinematic: centered editorial composition layered around the sculpture.
+   z-index auto here so children can sit behind (primary) or in front of the
+   canvas (z1). GSAP owns the transforms (xPercent:-50 + animated y/opacity). */
 .statement[data-mode='cinematic'] .stm-content {
   position: absolute;
   inset: 0;
+  z-index: auto;
   max-width: none;
   margin: 0;
   display: block;
+  pointer-events: none;
 }
 .statement[data-mode='cinematic'] .stm-eyebrow {
   position: absolute;
-  top: clamp(7rem, 13vh, 10rem);
-  left: clamp(1.5rem, 5vw, 7rem);
+  top: clamp(6rem, 12vh, 9rem);
+  left: 50%;
   margin: 0;
+  z-index: 4;
 }
 .statement[data-mode='cinematic'] .stm-statement {
   position: absolute;
-  text-align: left;
-  max-width: 34ch;
+  left: 50%;
+  width: min(92vw, 900px);
+  max-width: none;
+  text-align: center;
 }
 .statement[data-mode='cinematic'] .stm-statement--1 {
-  top: clamp(9.5rem, 22vh, 15rem);
-  left: clamp(1.5rem, 5vw, 7rem);
+  top: clamp(8.5rem, 18vh, 13rem);
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  color: var(--text);
+  z-index: 0; /* primary sits behind the glass sculpture */
 }
 .statement[data-mode='cinematic'] .stm-statement--2 {
-  bottom: clamp(8rem, 20vh, 13rem);
-  right: clamp(1.5rem, 5vw, 7rem);
-  text-align: right;
+  bottom: clamp(8rem, 17vh, 12rem);
+  width: min(92vw, 760px);
+  font-size: clamp(1.45rem, 2.8vw, 2.35rem);
+  color: var(--blue-light);
   margin: 0;
+  z-index: 4; /* secondary in front */
 }
 .statement[data-mode='cinematic'] .stm-support {
   position: absolute;
-  bottom: clamp(2.5rem, 6vh, 4rem);
-  left: clamp(1.5rem, 5vw, 7rem);
-  max-width: 42ch;
+  left: 50%;
+  bottom: clamp(2.25rem, 5.5vh, 3.5rem);
+  width: min(90vw, 600px);
+  max-width: none;
+  text-align: center;
   margin: 0;
-  text-align: left;
+  z-index: 4;
 }
 
-/* Mobile mode: centered, object behind text, no giant words. */
+/* Mobile mode: centered, object behind text. */
 .statement[data-mode='mobile'] .stm-content {
   position: absolute;
   inset: 0;
@@ -1886,10 +1866,15 @@ section {
 }
 .trust-card {
   position: relative;
+  min-width: 0; /* allow grid items to shrink — prevents right-edge clipping */
   padding: clamp(1.5rem, 2.6vw, 2.25rem);
   background: var(--bg);
   transition: background 0.45s var(--ease);
   overflow: hidden;
+}
+.trust-card__title,
+.trust-card__desc {
+  overflow-wrap: anywhere;
 }
 .trust-card::after {
   content: '';
@@ -2394,8 +2379,7 @@ section {
   .statement[data-mode='cinematic'] .stm-support {
     max-width: 54ch;
   }
-  .stm-canvas,
-  .stm-typo {
+  .stm-canvas {
     display: none !important;
   }
   .stm-content,
