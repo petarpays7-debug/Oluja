@@ -818,7 +818,7 @@ section {
   100% { transform: translateY(100%); }
 }
 
-/* ---------- STATEMENT — cinematic digital-sculpture reveal ---------- */
+/* ---------- STATEMENT — typography-first cinematic section ---------- */
 .statement {
   position: relative;
   background: #020305;
@@ -831,12 +831,12 @@ section {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 78vh;
+  min-height: 80vh;
   padding: clamp(7rem, 18vh, 14rem) var(--gutter);
   overflow: hidden;
 }
 
-/* ===== Cinematic (WebGL desktop) + Mobile (CSS-lite) shared shell ===== */
+/* ===== Cinematic (desktop) + Mobile shared sticky shell ===== */
 .statement[data-mode='cinematic'],
 .statement[data-mode='mobile'] {
   overflow: clip;
@@ -851,17 +851,17 @@ section {
   display: block;
 }
 .statement[data-mode='cinematic'] {
-  height: 300vh;
+  height: 260vh;
 }
 .statement[data-mode='mobile'] {
-  height: 165vh;
+  height: 175vh;
 }
 .statement[data-mode='reduced'] {
   height: auto;
 }
 
-/* ===== WebGL canvas — transparent over the black section ===== */
-.stm-canvas {
+/* ===== Atmosphere / typographic-dust canvas ===== */
+.stm-particles {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -869,195 +869,142 @@ section {
   z-index: 1;
   pointer-events: none;
   display: none;
-  opacity: 0;
 }
-.statement[data-mode='cinematic'] .stm-canvas {
+.statement[data-mode='cinematic'] .stm-particles,
+.statement[data-mode='mobile'] .stm-particles {
   display: block;
 }
 
-/* ===== CSS-lite sculpture (mobile / no-WebGL / reduced) ===== */
-.stm-lite {
+/* ===== Light streaks (charged air) — sweep behind the text ===== */
+.stm-streaks {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.stm-streaks span {
+  position: absolute;
+  left: -35%;
+  width: 70%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(150, 188, 255, 0.55), transparent);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.stm-streaks span:nth-child(1) { top: 38%; }
+.stm-streaks span:nth-child(2) { top: 52%; }
+.stm-streaks span:nth-child(3) { top: 64%; }
+
+/* ===== Shockwave ring — the signature "lock-in" moment ===== */
+.stm-shock {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(70vw, 460px);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%) scale(var(--lite-scale, 0.6));
-  z-index: 1;
-  pointer-events: none;
-  display: none;
-  will-change: transform, opacity;
-}
-.statement[data-mode='mobile'] .stm-lite,
-.statement[data-mode='reduced'] .stm-lite {
-  display: block;
-}
-.stm-lite span {
-  position: absolute;
-  inset: 0;
+  width: 44vmin;
+  height: 44vmin;
+  margin: -22vmin 0 0 -22vmin;
   border-radius: 50%;
-}
-.stm-lite__halo {
-  background: radial-gradient(circle at 50% 50%, rgba(80, 130, 255, 0.22), transparent 62%);
-  filter: blur(26px);
-}
-.stm-lite__bloom {
-  background:
-    conic-gradient(from 0deg,
-      rgba(120, 90, 255, 0.0) 0deg,
-      rgba(90, 140, 255, 0.30) 40deg,
-      rgba(150, 90, 255, 0.10) 90deg,
-      rgba(90, 150, 255, 0.30) 150deg,
-      rgba(140, 90, 255, 0.10) 220deg,
-      rgba(90, 140, 255, 0.30) 300deg,
-      rgba(120, 90, 255, 0.0) 360deg);
-  -webkit-mask: radial-gradient(circle at 50% 50%, transparent 18%, #000 30%, #000 56%, transparent 70%);
-          mask: radial-gradient(circle at 50% 50%, transparent 18%, #000 30%, #000 56%, transparent 70%);
-  filter: blur(2px) saturate(1.2);
-  opacity: var(--lite-bloom, 0.5);
-}
-.stm-lite__core {
-  width: 36%;
-  height: 36%;
-  inset: 32%;
-  background: radial-gradient(circle at 50% 45%, #d9c6ff, #8a4dff 45%, rgba(110, 50, 230, 0) 72%);
-  filter: blur(3px);
-  opacity: var(--lite-core, 0.35);
-}
-
-/* ===== Atmospheric violet release — bridge into next section ===== */
-.stm-atmos {
-  position: absolute;
-  inset: -10%;
-  z-index: 3;
+  border: 1.5px solid rgba(160, 196, 255, 0.6);
+  box-shadow: 0 0 70px rgba(70, 130, 255, 0.28), inset 0 0 50px rgba(70, 130, 255, 0.12);
+  z-index: 2;
   pointer-events: none;
   opacity: 0;
-  background:
-    radial-gradient(circle at 50% 48%, rgba(196, 132, 255, 0.55) 0%, rgba(124, 60, 230, 0.28) 26%, rgba(60, 30, 120, 0.0) 58%);
-  will-change: opacity, transform;
+  transform: scale(0.2);
+  will-change: transform, opacity;
 }
 
 /* ===== Editorial typography (single semantic copy) ===== */
 .stm-content {
   position: relative;
-  z-index: 2;
-  max-width: 760px;
+  z-index: 3;
+  max-width: 1000px;
   margin: 0 auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+.statement[data-mode='cinematic'] .stm-content,
+.statement[data-mode='mobile'] .stm-content {
+  position: absolute;
+  inset: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0 var(--gutter);
+  justify-content: center;
+  pointer-events: none;
+}
 .stm-eyebrow {
-  display: inline-block;
   font-family: var(--font-display);
   font-size: 0.74rem;
   letter-spacing: 0.42em;
   text-transform: uppercase;
   color: var(--blue-light);
-  margin-bottom: clamp(1.25rem, 3vh, 2rem);
+  margin-bottom: clamp(1.5rem, 3.5vh, 2.5rem);
 }
-.stm-statement {
+.stm-main {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.55rem, 3.4vw, 2.9rem);
-  line-height: 1.18;
-  letter-spacing: -0.02em;
+  font-size: clamp(1.9rem, 4.6vw, 4rem);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
   color: var(--text);
+  max-width: 18ch;
   text-wrap: balance;
-  max-width: 22ch;
 }
-.stm-statement--2 {
-  margin-top: 0.75em;
+.stm-secondary {
+  margin-top: clamp(1.5rem, 4vh, 2.75rem);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.2rem, 2.4vw, 1.9rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-dim);
+  max-width: 24ch;
+  text-wrap: balance;
+}
+.stm-secondary .accent {
   color: var(--blue-light);
 }
 .stm-support {
-  margin-top: clamp(1.75rem, 4vh, 3rem);
-  max-width: 54ch;
+  margin-top: clamp(1.5rem, 3.5vh, 2.5rem);
+  max-width: 56ch;
   font-family: var(--font-body);
-  font-size: clamp(0.95rem, 0.8rem + 0.4vw, 1.15rem);
+  font-size: clamp(0.9rem, 0.78rem + 0.4vw, 1.1rem);
   color: var(--text-dim);
   line-height: 1.65;
   text-wrap: balance;
 }
 
-/* Cinematic: centered editorial composition layered around the sculpture.
-   z-index auto here so children can sit behind (primary) or in front of the
-   canvas (z1). GSAP owns the transforms (xPercent:-50 + animated y/opacity). */
-.statement[data-mode='cinematic'] .stm-content {
-  position: absolute;
-  inset: 0;
-  z-index: auto;
-  max-width: none;
-  margin: 0;
-  display: block;
-  pointer-events: none;
+/* Split-text spans (JS-generated) — GPU-friendly transforms only. */
+.stm-word {
+  display: inline-block;
+  white-space: nowrap;
 }
-.statement[data-mode='cinematic'] .stm-eyebrow {
-  position: absolute;
-  top: clamp(6rem, 12vh, 9rem);
-  left: 50%;
-  margin: 0;
-  z-index: 4;
-}
-.statement[data-mode='cinematic'] .stm-statement {
-  position: absolute;
-  left: 50%;
-  width: min(92vw, 900px);
-  max-width: none;
-  text-align: center;
-}
-.statement[data-mode='cinematic'] .stm-statement--1 {
-  top: clamp(8.5rem, 18vh, 13rem);
-  font-size: clamp(1.8rem, 3.5vw, 3rem);
-  color: var(--text);
-  z-index: 0; /* primary sits behind the glass sculpture */
-}
-.statement[data-mode='cinematic'] .stm-statement--2 {
-  bottom: clamp(8rem, 17vh, 12rem);
-  width: min(92vw, 760px);
-  font-size: clamp(1.45rem, 2.8vw, 2.35rem);
-  color: var(--blue-light);
-  margin: 0;
-  z-index: 4; /* secondary in front */
-}
-.statement[data-mode='cinematic'] .stm-support {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(2.25rem, 5.5vh, 3.5rem);
-  width: min(90vw, 600px);
-  max-width: none;
-  text-align: center;
-  margin: 0;
-  z-index: 4;
+.stm-char {
+  display: inline-block;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
-/* Mobile mode: centered, object behind text. */
-.statement[data-mode='mobile'] .stm-content {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 0 var(--gutter);
+/* Mobile typography — simpler, always readable. */
+.statement[data-mode='mobile'] .stm-main {
+  font-size: clamp(1.6rem, 8vw, 2.3rem);
+  max-width: 15ch;
 }
-.statement[data-mode='mobile'] .stm-statement {
-  font-size: clamp(1.3rem, 6vw, 1.9rem);
-  text-align: center;
+.statement[data-mode='mobile'] .stm-secondary {
+  font-size: clamp(1.05rem, 5vw, 1.4rem);
   max-width: 20ch;
 }
 .statement[data-mode='mobile'] .stm-support {
-  text-align: center;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
+  max-width: 42ch;
 }
 
-/* Reduced motion: static premium composition, no pin, no bloom. */
+/* Reduced motion: static readable composition, no pin. */
 .statement[data-mode='reduced'] .stm-scene {
-  min-height: 76vh;
-}
-.statement[data-mode='reduced'] .stm-atmos {
-  opacity: 0.18;
+  min-height: 78vh;
 }
 
 /* ---------- PORTFOLIO ---------- */
@@ -2353,7 +2300,7 @@ section {
     align-items: center;
     justify-content: center;
   }
-  /* Collapse art-directed layout back to a centered readable block. */
+  /* Static centered readable block; no particle storm, no shockwave. */
   .statement[data-mode='cinematic'] .stm-content,
   .statement[data-mode='mobile'] .stm-content {
     position: relative !important;
@@ -2361,33 +2308,25 @@ section {
     display: flex !important;
     flex-direction: column;
     align-items: center;
-    max-width: 760px;
+    justify-content: center;
+    max-width: 820px;
     text-align: center;
   }
-  .statement[data-mode='cinematic'] .stm-eyebrow,
-  .statement[data-mode='cinematic'] .stm-statement,
-  .statement[data-mode='cinematic'] .stm-support {
-    position: relative !important;
-    inset: auto !important;
-    top: auto !important;
-    bottom: auto !important;
-    left: auto !important;
-    right: auto !important;
-    text-align: center !important;
-    max-width: 30ch;
-  }
-  .statement[data-mode='cinematic'] .stm-support {
-    max-width: 54ch;
-  }
-  .stm-canvas {
+  .stm-particles,
+  .stm-streaks,
+  .stm-shock {
     display: none !important;
   }
   .stm-content,
-  .stm-statement,
+  .stm-main,
+  .stm-secondary,
   .stm-support,
-  .stm-eyebrow {
+  .stm-eyebrow,
+  .stm-word,
+  .stm-char {
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
   }
   .hero__title .line > span,
   .reveal-line,

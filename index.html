@@ -214,36 +214,27 @@
         </div>
       </section>
 
-      <!-- UVODNA IZJAVA — cinematic digital-sculpture reveal -->
+      <!-- UVODNA IZJAVA — typography-first cinematic section -->
       <section class="statement" id="statement">
         <div class="stm-scene" id="stm-scene">
 
-          <!-- WebGL glass-bloom sculpture (desktop). Empty / hidden in fallback. -->
-          <canvas class="stm-canvas" id="stm-canvas" aria-hidden="true"></canvas>
+          <!-- Atmosphere: charged air, typographic dust + fragments (Canvas 2D). -->
+          <canvas class="stm-particles" id="stm-particles" aria-hidden="true"></canvas>
 
-          <!-- CSS-lite sculpture (mobile / no-WebGL). Layered glossy bloom. -->
-          <div class="stm-lite" id="stm-lite" aria-hidden="true">
-            <span class="stm-lite__halo"></span>
-            <span class="stm-lite__bloom"></span>
-            <span class="stm-lite__core"></span>
+          <!-- Light streaks sweeping behind the text. -->
+          <div class="stm-streaks" id="stm-streaks" aria-hidden="true">
+            <span></span><span></span><span></span>
           </div>
 
-          <!-- Atmospheric violet release overlay — bridges into next section. -->
-          <div class="stm-atmos" id="stm-atmos" aria-hidden="true"></div>
+          <!-- Shockwave ring — the "lock-in" moment. -->
+          <span class="stm-shock" id="stm-shock" aria-hidden="true"></span>
 
           <!-- Editorial typography (single semantic copy — a11y / SEO / no-JS). -->
           <div class="stm-content" id="stm-content">
-            <span class="stm-eyebrow" data-layer="eyebrow">PRVI DOJAM</span>
-            <p class="stm-statement stm-statement--1" data-layer="s1">
-              Vaša web stranica često je prvi kontakt kupca s vašom tvrtkom.
-            </p>
-            <p class="stm-statement stm-statement--2" data-layer="s2">
-              Pobrinut ćemo se da taj prvi dojam ne izgleda prosječno.
-            </p>
-            <p class="stm-support" data-layer="sup">
-              Od jednostavne poslovne prezentacije do potpuno prilagođenog
-              interaktivnog iskustva — dizajn, kod i animacije razvijamo kao jednu cjelinu.
-            </p>
+            <span class="stm-eyebrow">PRVI DOJAM</span>
+            <p class="stm-main" id="stm-main">Vaša web stranica često je prvi kontakt kupca s vašom tvrtkom.</p>
+            <p class="stm-secondary" id="stm-secondary">Pobrinut ćemo se da taj prvi dojam ne izgleda <span class="accent">prosječno</span>.</p>
+            <p class="stm-support" id="stm-support">Od jednostavne poslovne prezentacije do potpuno prilagođenog interaktivnog iskustva — dizajn, kod i animacije razvijamo kao jednu cjelinu.</p>
           </div>
 
         </div>
